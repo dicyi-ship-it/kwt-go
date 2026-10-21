@@ -2,7 +2,7 @@
   color-scheme: light;
   --ink: #233b32;
   --muted: #53665b;
-  --green: #197b47;
+  --green: #236b3b;
 }
 
 * {
@@ -18,9 +18,7 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
-  background: radial-gradient(ellipse at 0 0, #fff4c9, transparent 55%),
-    radial-gradient(ellipse at 100% 20%, #ffd8ee, transparent 55%),
-    radial-gradient(ellipse at 10% 100%, #d6cdff, transparent 65%), #edf6f0;
+  background: #f7f7ee;
 }
 
 button,
@@ -100,9 +98,9 @@ input:focus-visible {
   gap: 9px;
   min-height: 44px;
   padding: 10px 17px;
-  border: 1px solid #ffffffb3;
+  border: 1px solid #dce5d7;
   border-radius: 24px;
-  background: #ffffffc9;
+  background: #ffffff;
   color: var(--ink);
   font-size: 13px;
   font-weight: 600;
@@ -117,13 +115,13 @@ input:focus-visible {
 .welcome {
   padding: 36px 40px;
   border-radius: 24px;
-  background: linear-gradient(115deg, #ebc72a, #4fae59 70%, #289355);
-  box-shadow: 0 10px 32px #39753d16;
+  background: #185b36;
+  border: 1px solid #185b36;
 }
 
 .eyebrow {
   margin: 0 0 14px;
-  color: #183f2a;
+  color: #d8e9b1;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.8px;
@@ -131,7 +129,7 @@ input:focus-visible {
 
 h1 {
   margin: 0;
-  color: #143824;
+  color: #ffffff;
   font-size: clamp(28px, 3.8vw, 43px);
   font-weight: 700;
   line-height: 1.2;
@@ -140,7 +138,7 @@ h1 {
 
 .welcome-description {
   margin: 16px 0 0;
-  color: #153c25;
+  color: #edf5e8;
   font-size: 15px;
   line-height: 1.6;
 }
@@ -183,9 +181,9 @@ h1 {
   gap: 12px;
   min-height: 132px;
   padding: 20px 12px;
-  border: 1px solid #ffffffd9;
+  border: 1px solid #dce5d7;
   border-radius: 20px;
-  background: #ffffffed;
+  background: #ffffff;
   color: var(--ink);
   box-shadow: 0 5px 15px #3141300a;
   text-align: center;
@@ -242,9 +240,9 @@ h1 {
   gap: 10px;
   min-height: 44px;
   padding: 10px 18px;
-  border: 1px solid #ffffffa6;
+  border: 1px solid #dce5d7;
   border-radius: 24px;
-  background: #ffffffb3;
+  background: #ffffff;
   color: var(--ink);
   font-size: 13px;
 }
@@ -423,3 +421,5 @@ h1 {
     animation: none !important;
   }
 }
+
+.welcome-address { margin: 16px 0 0; color: #d6e5d3; font-size: 14px; line-height: 1.7; }

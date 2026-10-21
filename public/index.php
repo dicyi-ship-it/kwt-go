@@ -14,18 +14,18 @@ $visitProof = prepare_visit();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <?php if ($visitProof !== null): ?><meta name="visit-proof" content="<?= e($visitProof) ?>" data-endpoint="<?= e(url('track.php')) ?>"><?php endif ?>
-  <meta name="theme-color" content="#27ae60">
-  <meta name="description" content="Mina Go — layanan warga RW 12 Blok Mina dalam satu sentuhan.">
-  <title>Mina Go — RW 12 Blok Mina</title>
+  <meta name="theme-color" content="#185b36">
+  <meta name="description" content="Layanan warga Perumahan Villa Ilhami Blok Mina. Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas, Kota Tangerang, Banten 15138.">
+  <title>Villa Ilhami Blok Mina — Layanan Warga</title>
   <link rel="stylesheet" href="assets/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="page-shell">
     <header class="site-header">
-      <a href="<?= e(url()) ?>" class="brand" aria-label="Mina Go, halaman utama">
+      <a href="<?= e(url()) ?>" class="brand" aria-label="Villa Ilhami Blok Mina, halaman utama">
         <span class="brand-mark" aria-hidden="true"><?= service_icon('plant') ?></span>
-        <span><strong>Mina Go</strong><small>RW 12 · Blok Mina</small></span>
+        <span><strong>Villa Ilhami</strong><small>Blok Mina · Kota Tangerang</small></span>
       </a>
       <div class="share-button-wrapper" data-target="#share_modal">
         <button type="button" class="share-trigger" aria-label="Bagikan halaman" aria-haspopup="dialog" aria-controls="share_modal">
@@ -36,9 +36,10 @@ $visitProof = prepare_visit();
     </header>
     <main id="main-content">
       <section class="welcome" aria-labelledby="page-title">
-        <p class="eyebrow">🌿 RW 12 BLOK MINA</p>
-        <h1 id="page-title">Mina Peduli,<br>Satu Akses untuk Semua.</h1>
+        <p class="eyebrow">🌿 PERUMAHAN VILLA ILHAMI BLOK MINA</p>
+        <h1 id="page-title">Warga Mina,<br>Satu Akses untuk Semua.</h1>
         <p class="welcome-description">Semua layanan warga, lebih dekat dalam satu sentuhan.</p>
+        <p class="welcome-address">Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas,<br>Kota Tangerang, Banten 15138</p>
       </section>
       <section class="services" aria-labelledby="services-title">
         <div class="section-heading"><h2 id="services-title">Layanan Warga</h2><span><?= count($services) ?> layanan</span></div>
@@ -55,7 +56,7 @@ $visitProof = prepare_visit();
         <button id="scrollUp" type="button" onclick="scrollToTop()">↑ <span>Ke atas</span></button>
         <button id="scrollDown" type="button" onclick="scrollToBottom()">↓ <span>Ke bawah</span></button>
       </nav>
-      <p>© 2025 Mina Go RW 12 Blok Mina<br><span>Semua Layanan Warga Dalam Satu Sentuhan</span></p>
+      <p>© <?= date('Y') ?> Perumahan Villa Ilhami Blok Mina<br><span>Semua Layanan Warga Dalam Satu Sentuhan</span></p>
       <a href="<?= e(url('login.php')) ?>">Login admin</a>
     </footer>
   </div>

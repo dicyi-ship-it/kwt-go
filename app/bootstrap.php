@@ -2,14 +2,14 @@
 declare(strict_types=1);
 
 set_exception_handler(static function (Throwable $error): void {
-    error_log('Mina Go: ' . $error->getMessage());
+    error_log('Villa Ilhami Blok Mina: ' . $error->getMessage());
     if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, "Mina Go gagal dijalankan; periksa konfigurasi dan database.\n");
+        fwrite(STDERR, "Villa Ilhami Blok Mina gagal dijalankan; periksa konfigurasi dan database.\n");
         exit(1);
     }
     http_response_code(503);
     header('Content-Type: text/html; charset=utf-8');
-    echo '<!doctype html><html lang="id"><meta charset="utf-8"><title>Mina Go</title><h1>Layanan belum tersedia</h1><p>Periksa konfigurasi dan koneksi database. Detail tersedia di log server.</p></html>';
+    echo '<!doctype html><html lang="id"><meta charset="utf-8"><title>Villa Ilhami Blok Mina</title><h1>Layanan belum tersedia</h1><p>Periksa konfigurasi dan koneksi database. Detail tersedia di log server.</p></html>';
 });
 
 function config(): array
