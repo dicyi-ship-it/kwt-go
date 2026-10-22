@@ -109,3 +109,15 @@ php scripts/migrate-service-inputs.php
 Skrip ini memerlukan akun database dengan izin `ALTER` selain izin baca/tulis. Gunakan konfigurasi migrasi pribadi melalui `MINA_CONFIG=/path/config-migrasi.php` bila akun runtime hanya memiliki izin data; jangan menambah izin schema permanen pada akun runtime.
 
 Migrasi membuat backup baris layanan dalam `.local/backups/` sebelum mengubah schema/data. Nomor dan pretext diekstrak dari URL lama, ikon dipetakan ke SVG, dan Tangerang Live tetap menjadi tujuan website. Data asli tersimpan pada backup. Hentikan perubahan tombol selama migrasi. Jalankan ulang aman: baris yang sudah dipindahkan tidak ditimpa. Migrasi DDL MySQL bukan transaksi penuh; bila terhenti, simpan backup, periksa pesan kesalahan dan jalankan ulang setelah masalah diperbaiki. Simpan backup di lokasi pribadi, tidak di document root. Pada versi lokal di mesin ini, migrasi sudah diterapkan.
+
+## Kontak WhatsApp struktur RW dan RT
+
+Untuk instalasi lama, impor `database/structure-contacts.sql` melalui akun pengelola database yang memiliki izin CREATE. Alternatif CLI: `php scripts/migrate-structure-contacts.php` dengan konfigurasi database berizin CREATE. Migrasi hanya menambahkan tabel kontak; tidak mengubah data layanan.
+
+Login sebagai admin, pilih **Kelola WhatsApp RW dan RT**, lalu isi satu nomor untuk RW 12 dan masing-masing RT 1-6. Nomor boleh dikosongkan; nomor yang tersimpan akan dipublikasikan sebagai tautan WhatsApp pada kartu struktur.
+
+## Direktori UMKM
+
+Instalasi lama: impor `database/umkm.sql`, lalu `database/umkm-seed.sql` satu kali melalui akun pengelola database. Alternatif: jalankan `php scripts/migrate-umkm.php` dengan konfigurasi berizin CREATE. Skrip melewati tabel yang sudah tersedia sehingga tidak mengembalikan data yang telah dihapus.
+
+Buka **Layanan Ekonomi > UMKM** untuk melihat direktori. Login admin lalu pilih **Kelola Data UMKM** untuk menambah, mengedit, dan menghapus usaha. Lima usaha awal adalah data contoh; alamat dan nomor kontak nyata belum diisi. Hapus penanda data contoh setelah menggantinya dengan data usaha yang benar.

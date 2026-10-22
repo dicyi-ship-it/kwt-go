@@ -22,3 +22,10 @@ INSERT INTO services (id, label, icon, target_type, wa_phone, wa_message, url, s
 (19, 'Puskesmas Panbar', 'hospital', 'whatsapp', '6281110516661', 'Assalamualaikum, saya ... ingin minta bantuan pelayanan Puskesmas Panbar', NULL, 19, 1),
 (20, 'Fardu Kifayah', 'mosque', 'whatsapp', '6287789275712', 'Assalamualaikum, saya ... ingin minta bantuan pelayanan Fardu Kifayah', NULL, 20, 1),
 (21, 'Ambulan', 'ambulance', 'whatsapp', '622155771135', 'Assalamualaikum, saya ... ingin minta bantuan pelayanan Ambulan', NULL, 21, 1);
+
+INSERT INTO umkm (name, category, description, address, wa_phone, is_sample) VALUES
+('Dapur Mina Rasa', 'Kuliner', 'Aneka nasi kotak dan masakan rumahan untuk kebutuhan harian dan acara keluarga.', 'Alamat usaha belum diisi', '', 1),
+('Kreasi Jahit Ilhami', 'Fashion & Konveksi', 'Jasa jahit pakaian, permak, dan pembuatan seragam sesuai pesanan.', 'Alamat usaha belum diisi', '', 1),
+('Kebun Hijau Mina', 'Tanaman & Pertanian', 'Pilihan tanaman hias, bibit sayuran, dan perlengkapan berkebun untuk rumah.', 'Alamat usaha belum diisi', '', 1),
+('Bersih Wangi Laundry', 'Jasa Laundry', 'Layanan cuci dan setrika pakaian untuk membantu kebutuhan rumah tangga.', 'Alamat usaha belum diisi', '', 1),
+('Kriya Anyam Panbar', 'Kerajinan', 'Produk anyaman dan suvenir buatan tangan untuk hadiah serta dekorasi rumah.', 'Alamat usaha belum diisi', '', 1);

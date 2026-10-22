@@ -4,8 +4,28 @@ require dirname(__DIR__) . '/app/bootstrap.php';
 require dirname(__DIR__) . '/app/visitors.php';
 require dirname(__DIR__) . '/app/services.php';
 require dirname(__DIR__) . '/app/icons.php';
+require dirname(__DIR__) . '/app/structure-contacts.php';
+$structureContacts = structure_contacts();
 web_headers();
 $services = db()->query('SELECT * FROM services WHERE is_active = 1 ORDER BY sort_order, id')->fetchAll();
+$channels = [
+    'administrasi' => ['title' => 'Layanan Administrasi', 'icon' => 'home', 'description' => 'Kenali pengurus RW dan RT, serta akses informasi administrasi warga.', 'detail' => 'Struktur RW 12 & RT 1-6'],
+    'ekonomi' => ['title' => 'Layanan Ekonomi', 'icon' => 'shop', 'description' => 'Temukan layanan usaha dan kegiatan ekonomi di lingkungan kita.', 'detail' => 'UMKM & kegiatan warga'],
+    'permasyarakatan' => ['title' => 'Layanan Permasyarakatan', 'icon' => 'people', 'description' => 'Akses layanan sosial, kesehatan, keamanan, dan lingkungan.', 'detail' => 'Sosial & lingkungan'],
+];
+$channel = $_GET['layanan'] ?? '';
+if (!is_string($channel) || !isset($channels[$channel])) $channel = '';
+$channelServices = array_filter($services, static function (array $service) use ($channel): bool {
+    $group = match ($service['icon']) {
+        'shop', 'plant' => 'ekonomi',
+        'home', 'megaphone', 'chat', 'phone' => 'administrasi',
+        default => 'permasyarakatan',
+    };
+    return $group === $channel;
+});
+require dirname(__DIR__) . '/app/umkm.php';
+$showUmkm = $channel === 'ekonomi' && ($_GET['direktori'] ?? '') === 'umkm';
+$businesses = $showUmkm ? umkm_list() : [];
 $visitProof = prepare_visit();
 ?>
 <!DOCTYPE html>
@@ -35,29 +55,121 @@ $visitProof = prepare_visit();
       </div>
     </header>
     <main id="main-content">
+      <?php if ($channel === ''): ?>
       <section class="welcome" aria-labelledby="page-title">
-        <p class="eyebrow">🌿 PERUMAHAN VILLA ILHAMI BLOK MINA</p>
-        <h1 id="page-title">Warga Mina,<br>Satu Akses untuk Semua.</h1>
-        <p class="welcome-description">Semua layanan warga, lebih dekat dalam satu sentuhan.</p>
-        <p class="welcome-address">Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas,<br>Kota Tangerang, Banten 15138</p>
+        <p class="eyebrow">PORTAL WARGA &middot; RW 12</p>
+        <h1 id="page-title">Satu lingkungan,<br>semua saling terhubung.</h1>
+        <p class="welcome-description">Selamat datang di layanan warga Villa Ilhami Blok Mina.<br>Pilih layanan yang Anda butuhkan untuk memulai.</p>
+        <p class="welcome-address">Kelurahan Panunggangan Barat &middot; Kota Tangerang</p>
+        <div class="welcome-badge">6 RT <span>di dalam satu RW</span></div>
       </section>
       <section class="services" aria-labelledby="services-title">
-        <div class="section-heading"><h2 id="services-title">Layanan Warga</h2><span><?= count($services) ?> layanan</span></div>
-        <div class="services-grid">
-        <?php foreach ($services as $service): ?>
-          <a class="service-card" href="<?= e(service_url($service)) ?>"><span class="service-icon" aria-hidden="true"><?= service_icon($service['icon']) ?></span><span><?= e($service['label']) ?></span></a>
-        <?php endforeach ?>
-        <?php if (!$services): ?><p>Belum ada layanan yang aktif.</p><?php endif ?>
+        <div class="section-heading"><h2 id="services-title">Ada yang bisa kami bantu?</h2><span>3 kanal layanan warga</span></div>
+        <div class="channel-grid">
+          <?php foreach ($channels as $key => $item): ?>
+          <a class="channel-card channel-<?= e($key) ?>" href="<?= e(url('?layanan=' . $key)) ?>">
+            <span class="channel-icon" aria-hidden="true"><?= service_icon($item['icon']) ?></span>
+            <h3><?= e($item['title']) ?></h3>
+            <p><?= e($item['description']) ?></p>
+            <span class="channel-detail"><?= e($item['detail']) ?></span>
+            <span class="channel-action">Buka layanan <span aria-hidden="true">&nearr;</span></span>
+          </a>
+          <?php endforeach ?>
         </div>
       </section>
+      <?php else: ?>
+      <nav class="breadcrumb-nav" aria-label="Jejak navigasi"><a href="<?= e(url()) ?>">Beranda</a><span aria-hidden="true">/</span><span aria-current="page"><?= e($channels[$channel]['title']) ?></span></nav>
+      <section class="welcome channel-welcome" aria-labelledby="page-title">
+        <p class="eyebrow">RW 12 &middot; KELURAHAN PANUNGGANGAN BARAT</p>
+        <h1 id="page-title"><?= $showUmkm ? 'Direktori UMKM Warga' : e($channels[$channel]['title']) ?></h1>
+        <p class="welcome-description"><?= e($channels[$channel]['description']) ?></p>
+      </section>
+      <nav class="channel-nav" aria-label="Pilihan layanan">
+        <?php foreach ($channels as $key => $item): ?>
+        <a href="<?= e(url('?layanan=' . $key)) ?>" <?= $channel === $key ? 'aria-current="page"' : '' ?>><?= e($item['title']) ?></a>
+        <?php endforeach ?>
+      </nav>
+      <?php if ($channel === 'administrasi'): ?>
+      <section class="organization" aria-labelledby="organization-title">
+        <div class="section-heading"><div><p class="section-kicker">PENGURUS LINGKUNGAN</p><h2 id="organization-title">Struktur Pengurus RW 12</h2></div><span>Kelurahan Panunggangan Barat</span></div>
+        <p class="organization-note">Nama pengurus belum tersedia. Susunan jabatan berikut merupakan kerangka awal dan akan disesuaikan dengan data resmi.</p>
+        <div class="rw-chart" aria-label="Kerangka struktur RW 12">
+          <div class="officer officer-lead"><span class="officer-avatar" aria-hidden="true"><?= service_icon('home') ?></span><h3>Ketua RW 12</h3><p>Belum diisi</p></div>
+          <div class="officer-branches">
+            <?php foreach (['Sekretaris RW', 'Bendahara RW'] as $role): ?>
+            <div class="officer"><h3><?= e($role) ?></h3><p>Belum diisi</p></div>
+            <?php endforeach ?>
+          </div>
+          <?php structure_contact_card('rw12', $structureContacts); ?>
+        </div>
+        <div class="section-heading rt-heading"><h2>Struktur Pengurus RT</h2><span>RT 1 hingga RT 6</span></div>
+        <div class="rt-grid">
+          <?php for ($rt = 1; $rt <= 6; $rt++): ?>
+          <details class="rt-card">
+            <summary><span class="rt-number"><?= sprintf('%02d', $rt) ?></span><span><strong>RT <?= $rt ?></strong><small>RW 12 &middot; Panunggangan Barat</small></span><span class="rt-expand" aria-hidden="true">+</span></summary>
+            <div class="rt-officers">
+              <?php foreach (['Ketua RT', 'Sekretaris RT', 'Bendahara RT'] as $role): ?>
+              <div><h3><?= e($role) ?> <?= $rt ?></h3><p>Belum diisi</p></div>
+              <?php endforeach ?>
+            </div>
+            <?php structure_contact_card('rt' . $rt, $structureContacts); ?>
+          </details>
+          <?php endfor ?>
+        </div>
+      </section>
+      <?php endif ?>
+      <?php if ($showUmkm): ?>
+      <section class="services" aria-labelledby="umkm-title">
+        <div class="section-heading"><h2 id="umkm-title">Usaha dari lingkungan kita</h2><span><?= count($businesses) ?> UMKM</span></div>
+        <p class="organization-note">Kenali produk dan jasa warga. Usaha bertanda &ldquo;Data contoh&rdquo; merupakan dataset demonstrasi, bukan usaha yang telah terverifikasi.</p>
+        <div class="umkm-grid">
+          <?php foreach ($businesses as $business): ?>
+          <article class="umkm-card">
+            <div class="umkm-card-top"><span class="channel-icon" aria-hidden="true"><?= service_icon('shop') ?></span><?php if ($business['is_sample']): ?><span class="umkm-sample">Data contoh</span><?php endif ?></div>
+            <span class="umkm-category"><?= e($business['category']) ?></span>
+            <h3><?= e($business['name']) ?></h3>
+            <p class="umkm-description"><?= e($business['description']) ?></p>
+            <p class="umkm-address"><strong>Alamat usaha</strong><?= e($business['address']) ?></p>
+            <?php if ($business['wa_phone'] !== ''): ?><a class="umkm-contact" href="<?= e('https://wa.me/' . $business['wa_phone']) ?>">Hubungi via WhatsApp <span aria-hidden="true">&nearr;</span></a>
+            <?php else: ?><span class="umkm-contact umkm-contact-empty">WhatsApp belum tersedia</span><?php endif ?>
+          </article>
+          <?php endforeach ?>
+        </div>
+        <?php if (!$businesses): ?><p class="organization-note">Belum ada UMKM yang terdaftar.</p><?php endif ?>
+      </section>
+      <?php else: ?>
+      <section class="services" aria-labelledby="services-title">
+        <div class="section-heading"><h2 id="services-title">Akses Layanan</h2><span><?= count($channelServices) ?> layanan</span></div>
+        <div class="services-grid">
+          <?php foreach ($channelServices as $service): ?>
+          <a class="service-card" href="<?= e(mb_strtoupper(trim($service['label'])) === 'UMKM' ? url('?layanan=ekonomi&direktori=umkm') : service_url($service)) ?>"><span class="service-icon" aria-hidden="true"><?= service_icon($service['icon']) ?></span><span><?= e($service['label']) ?></span></a>
+          <?php endforeach ?>
+        </div>
+        <?php if (!$channelServices): ?><p class="organization-note">Belum ada layanan yang aktif di kanal ini.</p><?php endif ?>
+      </section>
+      <?php endif ?>
+      <?php endif ?>
     </main>
     <footer class="site-footer">
       <nav id="top_left_floating" class="scroll-navigation" aria-label="Navigasi halaman">
         <button id="scrollUp" type="button" onclick="scrollToTop()">↑ <span>Ke atas</span></button>
         <button id="scrollDown" type="button" onclick="scrollToBottom()">↓ <span>Ke bawah</span></button>
       </nav>
-      <p>© <?= date('Y') ?> Perumahan Villa Ilhami Blok Mina<br><span>Semua Layanan Warga Dalam Satu Sentuhan</span></p>
-      <a href="<?= e(url('login.php')) ?>">Login admin</a>
+      <div class="footer-program">
+        <div class="footer-emblem" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none"><path d="m5 18 19-9 19 9-19 9L5 18Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13 22v12c7 6 15 6 22 0V22M43 18v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="footer-program-copy">
+          <span class="footer-kicker">PENDIDIKAN, TEKNOLOGI &amp; PEMBERDAYAAN</span>
+          <h2>Teknologi untuk Masyarakat.</h2>
+          <p>Dikembangkan melalui Program Pengabdian kepada Masyarakat<br><strong>Sekolah Tinggi Teknologi Informasi NIIT I-Tech</strong></p>
+        </div>
+        <span class="footer-program-tag">Pengabdian kepada Masyarakat</span>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <?= date('Y') ?> Perumahan Villa Ilhami Blok Mina<span class="footer-tagline">Layanan terpadu untuk warga yang saling terhubung.</span></p>
+        <a class="footer-admin" href="<?= e(url('login.php')) ?>">Login Pengelola <span aria-hidden="true">&nearr;</span></a>
+      </div>
     </footer>
   </div>
 <div class="modal fade" id="share_modal" tabindex="-1" role="dialog" aria-labelledby="share-title" aria-hidden="true">

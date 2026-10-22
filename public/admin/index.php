@@ -68,6 +68,8 @@ admin_header('Dashboard');
 ?>
 <div class="page-title"><div><p class="eyebrow">DASHBOARD</p><h1>Halo, <?= e($_SESSION['username']) ?></h1><p class="muted">Statistik dan layanan warga dalam satu tempat.</p></div><a class="button" href="<?= e(url('admin/')) ?>#service-form">+ Tambah tombol</a></div>
 <?php if ($flash): ?><div class="notice" role="status"><?= e($flash) ?></div><?php endif ?>
+<p><a class="button secondary" href="<?= e(url('admin/structure.php')) ?>">Kelola WhatsApp RW dan RT</a></p>
+<p><a class="button secondary" href="<?= e(url('admin/umkm.php')) ?>">Kelola Data UMKM</a></p>
 <section aria-label="Statistik pengunjung" class="stats-grid">
 <?php foreach (['today' => 'Pengunjung hari ini', 'month' => 'Pengunjung bulan ini', 'total' => 'Total pengunjung'] as $key => $label): ?>
 <article class="panel stat"><span><?= e($label) ?></span><strong><?= number_format($stats[$key], 0, ',', '.') ?></strong><small><?= e($key === 'today' ? date('d/m/Y') : ($key === 'month' ? date('m/Y') : 'Sejak pencatatan dimulai')) ?></small></article>
