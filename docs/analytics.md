@@ -37,3 +37,14 @@ Angka berasal dari kunjungan endpoint yang tersimpan di database, bukan angka ac
 `login_attempts` terpisah: HMAC alamat koneksi (`REMOTE_ADDR`) + bucket waktu, jumlah percobaan, kedaluwarsa. Lima percobaan diperbolehkan per jendela tetap 15 menit; berikutnya ditolak. Baris kedaluwarsa dibersihkan saat percobaan login. Di belakang proxy, beberapa pengguna dapat berbagi bucket karena header IP tidak dipercaya otomatis.
 
 Belum ada pembersihan historis otomatis pengunjung. Penghapusan mengubah total/periode terkait. Data bertambah seiring penggunaan; skala besar belum diukur.
+
+
+## Portal, persuratan, dan SQLite
+
+Halaman kanal, direktori UMKM, dan setiap tahap persuratan memakai mekanisme tracking publik yang sama. Berpindah dari pilih surat ke pilih RT pada hari yang sama tidak menambah pengunjung unik jika cookie tetap sama. Klik tombol WhatsApp tidak dicatat sebagai jumlah permohonan atau keberhasilan pengiriman. Situs tidak menyimpan isi percakapan maupun riwayat pengajuan surat.
+
+SQLite memakai tabel `visitors`/`visitor_days` yang sama dan transaksi untuk menyimpan identitas serta tanggal bersama. Migrasi mempertahankan data historis; jangan menginisialisasi database kosong atau mengimpor ulang data untuk mengatur ulang angka tanpa rencana. Memulihkan backup lama juga memundurkan statistik ke kondisi saat backup dibuat.
+
+Dashboard admin menampilkan statistik hanya pada `/admin/`. Gunakan browser yang tidak login untuk pemeriksaan tracking. Jika cookie dihapus untuk mengulang tes, identitas baru dapat terhitung; gunakan database pengujian terpisah agar angka aktif tidak tercemar.
+
+Pembuatan backup, pemindahan data, dan penanganan database terkunci dijelaskan di [SQLite](sqlite.md); cakupan tes dan batas verifikasi ada di [verification.md](verification.md).

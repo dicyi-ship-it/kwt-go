@@ -1,76 +1,116 @@
-# Pengembangan dan pengelolaan Mina Go
+# Pengembangan
 
-## Menjalankan
+## Lingkungan
 
-Ikuti [instalasi](deployment.md), lalu dari folder proyek:
+PHP 8.2+, PDO SQLite, dan mbstring untuk aplikasi. Python 3 untuk tes HTTP; Node.js untuk tes JavaScript. Tidak ada dependensi Composer/npm atau proses build. Ikuti [instalasi SQLite](sqlite.md), kemudian jalankan `php -S localhost:4173 -t public` dari root repository.
 
-```sh
-php -S localhost:4173 -t public
-```
+Konfigurasi dibaca dari `config.local.php`. Variabel lingkungan `MINA_CONFIG` dapat menunjuk file konfigurasi lain untuk CLI dan server pengujian. Path konfigurasi tes harus tersedia pada **kedua** proses, bukan hanya klien HTTP.
 
-Halaman utama `/`, login `/login.php`, dashboard `/admin/`. Aset berada di `public/`. Jangan menjalankan server dengan document root seluruh folder proyek.
-
-## Mengelola tombol
-
-Masuk sebagai admin, lalu gunakan tabel dan form dashboard:
-
-- **Tambah:** isi nama, klik gambar ikon, pilih Chat WhatsApp, lalu isi nomor dan pesan pembuka (pretext). Tidak perlu membuat URL.
-- **Edit:** ubah nilai melalui tautan Edit.
-- **Nonaktif:** hilangkan centang “Tampilkan di website”. Data tetap tersimpan.
-- **Hapus:** pilih Hapus, lalu konfirmasi pada form terpisah. Membuka konfirmasi belum menghapus data.
-- **Urutkan:** angka terkecil tampil lebih dahulu; jika sama, berdasarkan ID.
-
-Perubahan langsung dibaca halaman publik dari database. Jumlah layanan dihitung dari tombol aktif. Tidak ada daftar tombol duplikat dalam HTML atau JavaScript.
-
-Nomor Indonesia dapat diketik sebagai `081234567890`, `6281234567890`, atau `+62 (812) 3456-7890`. Aplikasi menyimpan bentuk `6281234567890` dan meng-encode pesan saat membentuk link. Pesan boleh beberapa baris, maksimal 2000 karakter, dan tidak otomatis terkirim. Contoh: `Assalamualaikum, saya ingin meminta bantuan pelayanan Info Warga.`
-
-Untuk tujuan selain WhatsApp, pilih **Website / aplikasi lain**. Kolom alamat website hanya diperlukan untuk pilihan tersebut, misalnya Tangerang Live. Kolom WhatsApp disembunyikan dan tidak disimpan untuk tombol website; URL tidak disimpan untuk tombol WhatsApp. Ikon memakai emoji seperti referensi dan dipilih dengan klik, tanpa mengetik lewat keyboard emoji. Bentuknya mengikuti font emoji pada perangkat.
-
-`database/seed.sql` berisi 21 tombol awal: 20 kontak WhatsApp dan satu Tangerang Live. Impor hanya saat instalasi awal. Nomor/pesan diekstrak dari sumber; awalan `0` diubah menjadi `62`, dan spasi pemisah dibersihkan. Nomor singkat/telepon layanan yang berasal dari referensi tetap perlu dikonfirmasi pengelola: format valid tidak membuktikan akun tersebut terdaftar WhatsApp. Tidak ada pesan yang dikirim saat pengujian.
-
-## Pembagian file
+## Pembagian kode
 
 | File | Tanggung jawab |
 | --- | --- |
-| `app/bootstrap.php` | Konfigurasi, PDO, escaping HTML, sesi, CSRF, URL aplikasi |
-| `app/admin.php` | Pemeriksaan login, layout admin, validasi tombol |
-| `app/services.php` | Pemilik normalisasi nomor, pembentukan link WA, dan parser migrasi URL lama |
-| `app/icons.php` | Katalog ikon emoji dan pemetaan ikon lama |
-| `app/visitors.php` | Identitas cookie, bukti kunjungan, pencatatan/statistik |
-| `public/index.php` | Render tombol aktif dan tautan berbagi |
-| `public/login.php` | Login dan pembatasan percobaan |
-| `public/admin/index.php` | Dashboard dan aksi CRUD/logout |
-| `public/track.php` | Endpoint POST kunjungan |
+| `app/bootstrap.php` | Konfigurasi, koneksi PDO SQLite/MySQL, header, sesi, CSRF, escaping dan URL |
+| `app/services.php` | Kanal bersama publik/admin, pemetaan ikon, normalisasi WA dan link layanan |
+| `app/icons.php` | Katalog emoji yang dipakai publik/admin |
+| `app/admin.php` | Layout/navigasi admin dan validasi layanan |
+| `app/structure-contacts.php` | Nama/WhatsApp pengurus, simpan/hapus kontak, kartu publik |
+| `app/admin-structure.php` | Pemrosesan form pengurus dengan transaksi |
+| `app/admin-structure-form.php` | Form pengurus pada accordion Administrasi |
+| `app/letters.php` | Daftar layanan surat dan penyusunan pesan |
+| `app/letters-view.php` | Pilihan surat, RT, ringkasan dan tautan WhatsApp |
+| `app/umkm.php` | Validasi dan pembacaan UMKM |
+| `app/visitors.php` | Cookie, bukti kunjungan, penyimpanan dan statistik |
+| `public/index.php` | Portal, kanal, struktur, direktori dan persuratan |
+| `public/admin/index.php` | Dashboard, kanal, CRUD layanan, popup dan logout |
+| `public/admin/structure.php` | Kompatibilitas URL/form lama ke halaman Administrasi gabungan |
+| `public/admin/umkm.php` | CRUD UMKM |
+| `public/login.php` | Login dan batas percobaan |
+| `public/track.php` | Endpoint pencatatan kunjungan POST |
 
-Input query memakai [prepared statements PDO](https://www.php.net/manual/en/pdo.prepared-statements.php). Password dibuat dengan [`password_hash`](https://www.php.net/manual/en/function.password-hash.php) dan diperiksa dengan `password_verify`; database tidak menyimpan password polos.
+Skema SQLite berada di `database/schema.sqlite.sql`; MySQL di `database/schema.sql`. Tujuh tabel: `admins`, `services`, `visitors`, `visitor_days`, `login_attempts`, `structure_contacts`, dan `umkm`. Konfigurasi default SQLite; konfigurasi MySQL lama tetap dikenali.
+
+## Perubahan fitur
+
+- Kanal publik dan admin memakai `service_channels()` dan `service_channel()` yang sama. Saat ini kategori mengikuti ikon; perubahan pemetaan memengaruhi kedua sisi.
+- Persuratan masuk Akses Layanan sebagai tombol bawaan, bukan baris tabel services. Jenis surat ada di `letter_types()`, pemetaan ikon di `letters-view.php`; ubah keduanya jika menambahkan jenis.
+- Validasi surat/RT hanya menerima pilihan yang dikenal. RT tanpa nomor valid tidak boleh menghasilkan tautan kirim.
+- Gunakan helper nomor dan pembentukan URL yang tersedia; jangan menyusun nomor atau pesan dari input mentah.
+- Pertahankan CSRF, pemeriksaan sesi, prepared statements dan escaping keluaran saat mengubah form.
+- Mengubah skema tidak otomatis memigrasikan database yang sudah ada. Sediakan langkah migrasi dan backup; jangan menjalankan ulang skema/seed terhadap data aktif.
 
 ## Tampilan
 
-Ubah `public/styles.css` untuk website dan `public/admin.css` untuk admin. Hindari mengedit CSS vendor Bootstrap. Grid publik: hingga 540px dua kolom, 541–900px tiga kolom, di atas 900px lima kolom. Konten maksimal 1080px. Pertahankan fokus keyboard dan `prefers-reduced-motion`.
+CSS publik: `public/styles.css`; admin: `public/admin.css`. Jangan ubah CSS vendor. Ikon berupa emoji, tampilannya mengikuti perangkat.
 
-`public/app.js` bergantung pada selector dialog di `public/index.php`; ubah keduanya jika struktur dialog berubah. URL berbagi memakai `base_url`. QR statis referensi dihapus agar tidak membagikan alamat situs lama saat aplikasi dihosting.
+Popup layanan memakai elemen native `dialog` dengan `showModal()`. Accordion memakai `details`/`summary`; JavaScript membuka bagian terkait saat navigasi hash. JS admin juga mengatur kolom tujuan WhatsApp/website. Pertahankan nama input/selector saat memindah form, fokus keyboard, tombol tutup, Escape, dan pesan validasi.
 
-## Pemeriksaan
+## Tes tanpa mutasi database
 
-Periksa sintaks file PHP yang diubah dengan `php -l PATH`. JavaScript:
-
-```sh
+```powershell
+php tests/service_inputs.php
+php tests/umkm.php
+php tests/letters.php
+node tests/admin_dialog.cjs
+node --check public/admin.js
 node --check public/app.js
 node --check public/visitors.js
-node --check public/admin.js
-php tests/service_inputs.php
 ```
 
-Tes integrasi **mengubah data**. Gunakan server/database pengujian dengan schema dan 21 seed; jangan jalankan terhadap produksi. Test HTTP menambah dua cookie pengunjung dan sementara membuat/menghapus satu tombol. Test limit login meninggalkan bucket yang dibatasi sampai jendela 15 menit berakhir.
+Periksa PHP yang diubah dengan `php -l PATH`. Pemeriksaan semua file:
 
-```sh
-read -r -s -p 'Password admin pengujian: ' MINA_TEST_PASSWORD
-printf '\n'
-printf '%s\n' "$MINA_TEST_PASSWORD" | MINA_TEST_ALLOW_MUTATION=1 python3 tests/http_smoke.py http://localhost:4173 testadmin
-unset MINA_TEST_PASSWORD
-MINA_TEST_ALLOW_MUTATION=1 php tests/visitor_stats.php
+```powershell
+Get-ChildItem app,public,scripts,tests -Filter *.php -Recurse | ForEach-Object {
+    php -l $_.FullName
+    if ($LASTEXITCODE -ne 0) { throw 'Sintaks PHP tidak valid' }
+}
 ```
 
-Tes statistik memakai transaksi yang dibatalkan setelah pemeriksaan lintas hari/bulan. `MINA_CONFIG=/path/config-test.php` dapat dipakai saat memulai server dan CLI untuk memilih konfigurasi pengujian di luar proyek.
+## Tes database/HTTP pada salinan terpisah
 
-Periksa browser pada 320, 390, 768, 1365px: kartu, dialog berbagi, login, tabel, form admin, Escape, Tab/Shift+Tab, dan gulir. Catat hanya pemeriksaan yang benar-benar dijalankan di [verification.md](verification.md).
+Tes HTTP melakukan mutasi, termasuk mengosongkan kontak RW/RT, membuat/menghapus usaha/layanan, menambah pengunjung dan membatasi login. **Jangan jalankan pada data aktif.** `tests/structure_contacts.php` memakai rollback tetapi tetap hanya jalankan pada salinan tes.
+
+Hentikan penulisan saat membuat salinan SQLite, lalu buat direktori privat `.local` bila belum tersedia:
+
+```powershell
+New-Item -ItemType Directory -Path .local -Force | Out-Null
+Copy-Item storage/mina.sqlite .local/test.sqlite
+```
+
+Buat `.local/sqlite-test-config.php`:
+
+```php
+<?php
+$c = require dirname(__DIR__) . '/config.local.php';
+$c['db'] = ['driver' => 'sqlite', 'path' => __DIR__ . '/test.sqlite'];
+$c['base_url'] = 'http://127.0.0.1:4174';
+return $c;
+```
+
+Terminal server tes:
+
+```powershell
+$env:MINA_CONFIG = (Resolve-Path .local/sqlite-test-config.php).Path
+php -S 127.0.0.1:4174 -t public
+```
+
+Terminal tes kedua, dari root repository:
+
+```powershell
+$env:MINA_CONFIG = (Resolve-Path .local/sqlite-test-config.php).Path
+$env:MINA_TEST_ALLOW_MUTATION = '1'
+php tests/structure_contacts.php
+php tests/visitor_stats.php
+$passwordTest = Read-Host 'Password akun pada salinan tes'
+$passwordTest | python tests/admin_sqlite_http.py http://127.0.0.1:4174 admin
+Remove-Variable passwordTest
+Remove-Item Env:MINA_CONFIG, Env:MINA_TEST_ALLOW_MUTATION
+```
+
+Gunakan username yang ada pada salinan tes. `Read-Host` di contoh tes menampilkan input; jalankan pada terminal pribadi. Password dikirim melalui stdin, bukan argumen proses. Tes PHP pengurus/statistik memakai rollback; tes HTTP meninggalkan perubahan di salinan tes. Buat salinan baru sebelum mengulang, atau tunggu jendela limit login berakhir. Hentikan server tes dengan Ctrl+C setelah selesai.
+
+`tests/http_smoke.py` adalah suite lama dengan asumsi seluruh 21 kartu tersedia pada halaman utama dan CRUD di dashboard; jangan gunakan sebagai patokan versi kanal saat ini. `admin_sqlite_http.py` masih mengimpor helper HTTP/parser dari file itu tanpa menjalankan suite lamanya.
+
+## Pemeriksaan manual sebelum rilis
+
+Periksa publik, login, kanal admin, accordion, popup dan persuratan pada desktop serta HP. Uji keyboard/fokus, Escape, isian error yang tetap terlihat, ikon, tombol tanpa nomor RT, label UMKM contoh, serta URL di subfolder jika digunakan. Catat hasil aktual dan keterbatasan di [verifikasi](verification.md).
