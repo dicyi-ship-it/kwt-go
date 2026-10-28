@@ -53,9 +53,13 @@ function record_visit(string $id): void
     $pdo = db();
     $pdo->beginTransaction();
     try {
-        $q = $pdo->prepare('INSERT INTO visitors (visitor_hash, first_seen, last_seen) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE last_seen = GREATEST(last_seen, VALUES(last_seen))');
+        $q = $pdo->prepare($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite'
+            ? 'INSERT INTO visitors (visitor_hash, first_seen, last_seen) VALUES (?, ?, ?) ON CONFLICT(visitor_hash) DO UPDATE SET last_seen = MAX(last_seen, excluded.last_seen)'
+            : 'INSERT INTO visitors (visitor_hash, first_seen, last_seen) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE last_seen = GREATEST(last_seen, VALUES(last_seen))');
         $q->execute([$hash, $now, $now]);
-        $q = $pdo->prepare('INSERT IGNORE INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?)');
+        $q = $pdo->prepare($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite'
+            ? 'INSERT INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?) ON CONFLICT(visitor_hash, visit_date) DO NOTHING'
+            : 'INSERT IGNORE INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?)');
         $q->execute([$hash, date('Y-m-d')]);
         $pdo->commit();
     } catch (Throwable $error) {

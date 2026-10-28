@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $businesses = umkm_list();
 admin_header('Kelola UMKM');
 ?>
-<div class="page-title"><div><p class="eyebrow">LAYANAN EKONOMI</p><h1>Kelola UMKM Warga</h1></div><div class="actions"><a class="button secondary" href="<?= e(url('?layanan=ekonomi&direktori=umkm')) ?>">Lihat direktori</a><a href="<?= e(url('admin/')) ?>">Dashboard</a></div></div>
+<div class="page-title"><div><p class="eyebrow">LAYANAN EKONOMI</p><h1>Kelola UMKM Warga</h1></div><div class="actions"><a class="button secondary" href="<?= e(url('?layanan=ekonomi&direktori=umkm')) ?>">Lihat direktori</a><a href="<?= e(url('admin/?layanan=ekonomi')) ?>">Kembali ke layanan</a></div></div>
 <?php if (isset($_SESSION['flash'])): ?><div class="notice" role="status"><?= e($_SESSION['flash']) ?></div><?php unset($_SESSION['flash']); endif ?>
 <?php if ($delete): ?><section class="panel danger"><h2>Hapus <?= e($delete['name']) ?>?</h2><p>Data usaha ini akan dihapus dari direktori.</p><form method="post" class="actions"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= e($delete['id']) ?>"><button class="button destructive">Ya, hapus UMKM</button><a class="button secondary" href="umkm.php">Batal</a></form></section><?php endif ?>
 <section class="panel"><div class="section-title"><h2>Daftar UMKM</h2><span><?= count($businesses) ?> usaha</span></div>
 <div class="table-scroll"><table><thead><tr><th>Nama usaha</th><th>Kategori</th><th>WhatsApp</th><th>Aksi</th></tr></thead><tbody>
-<?php foreach ($businesses as $business): ?><tr><td><?= e($business['name']) ?> <?php if ($business['is_sample']): ?><span class="badge inactive">Data contoh</span><?php endif ?></td><td><?= e($business['category']) ?></td><td><?= e($business['wa_phone'] ?: 'Belum diisi') ?></td><td><div class="actions"><a href="?edit=<?= e($business['id']) ?>#umkm-form">Edit</a><a class="danger-link" href="?delete=<?= e($business['id']) ?>">Hapus</a></div></td></tr><?php endforeach ?>
+<?php foreach ($businesses as $business): ?><tr><td><?= e($business['name']) ?> <?php if ($business['is_sample']): ?><span class="badge inactive">Data contoh</span><?php endif ?></td><td><?= e($business['category']) ?></td><td><?= e($business['wa_phone'] ?: 'Belum diisi') ?></td><td><div class="actions"><a class="button secondary" href="?edit=<?= e($business['id']) ?>#umkm-form">Edit</a><a class="button destructive" href="?delete=<?= e($business['id']) ?>">Hapus</a></div></td></tr><?php endforeach ?>
 <?php if (!$businesses): ?><tr><td colspan="4">Belum ada data UMKM.</td></tr><?php endif ?>
 </tbody></table></div></section>
 <section class="panel" id="umkm-form"><h2><?= $id === '' ? 'Tambah UMKM' : 'Edit UMKM' ?></h2>

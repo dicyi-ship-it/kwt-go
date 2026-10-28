@@ -6,9 +6,17 @@ require dirname(__DIR__, 2) . '/app/visitors.php';
 web_headers();
 require_admin();
 $pdo = db();
+$channels = service_channels();
+$channel = $_GET['layanan'] ?? '';
+if (!is_string($channel) || !isset($channels[$channel])) $channel = '';
+$adminPath = 'admin/' . ($channel !== '' ? '?layanan=' . $channel : '');
+if ($channel === 'administrasi') {
+    require dirname(__DIR__, 2) . '/app/structure-contacts.php';
+    require dirname(__DIR__, 2) . '/app/admin-structure.php';
+}
 $errors = [];
-$form = ['id' => '', 'label' => '', 'icon' => 'home', 'target_type' => 'whatsapp', 'wa_phone' => '', 'wa_message' => '', 'url' => '', 'sort_order' => (string) ((int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM services')->fetchColumn()), 'is_active' => 1];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$form = ['id' => '', 'label' => '', 'icon' => ($channel === 'ekonomi' ? 'shop' : ($channel === 'permasyarakatan' ? 'people' : 'home')), 'target_type' => 'whatsapp', 'wa_phone' => '', 'wa_message' => '', 'url' => '', 'sort_order' => (string) ((int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM services')->fetchColumn()), 'is_active' => 1];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !($channel === 'administrasi' && post_text('action') === 'save_structure')) {
     csrf_check();
     $action = post_text('action');
     if ($action === 'logout') {
@@ -17,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         session_destroy();
         redirect('login.php');
     }
+    if ($channel === '') { http_response_code(400); exit('Pilih kanal melalui Kelola layanan terlebih dahulu.'); }
     $id = post_text('id');
     if ($id !== '' && (!ctype_digit($id) || (int) $id < 1 || (int) $id > 4294967295)) { http_response_code(400); exit('ID tidak valid.'); }
     if ($action === 'save') {
@@ -35,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $q->execute($values);
             }
             $_SESSION['flash'] = 'Tombol berhasil disimpan.';
-            redirect('admin/');
+            redirect($adminPath);
         }
         http_response_code(422);
     } elseif ($action === 'delete' && $id !== '') {
@@ -43,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $q->execute([$id]);
         if ($q->rowCount() === 0) { http_response_code(404); exit('Tombol tidak ditemukan.'); }
         $_SESSION['flash'] = 'Tombol berhasil dihapus.';
-        redirect('admin/');
+        redirect($adminPath);
     } else {
         http_response_code(400); exit('Aksi tidak valid.');
     }
 }
 $delete = null;
 foreach (['edit', 'delete'] as $mode) {
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET' || !isset($_GET[$mode])) continue;
+    if ($channel === '' || $_SERVER['REQUEST_METHOD'] !== 'GET' || !isset($_GET[$mode])) continue;
     $id = $_GET[$mode];
     if (!is_string($id) || !ctype_digit($id) || (int) $id < 1 || (int) $id > 4294967295) { http_response_code(400); exit('ID tidak valid.'); }
     $q = $pdo->prepare('SELECT * FROM services WHERE id = ?');
@@ -62,31 +71,52 @@ foreach (['edit', 'delete'] as $mode) {
 }
 $stats = visitor_stats();
 $services = $pdo->query('SELECT * FROM services ORDER BY sort_order, id')->fetchAll();
+if ($channel !== '') $services = array_filter($services, static fn(array $service): bool => service_channel($service) === $channel);
 $flash = $_SESSION['flash'] ?? '';
 unset($_SESSION['flash']);
-admin_header('Dashboard');
+admin_header($channel !== '' ? $channels[$channel]['title'] : 'Dashboard');
 ?>
-<div class="page-title"><div><p class="eyebrow">DASHBOARD</p><h1>Halo, <?= e($_SESSION['username']) ?></h1><p class="muted">Statistik dan layanan warga dalam satu tempat.</p></div><a class="button" href="<?= e(url('admin/')) ?>#service-form">+ Tambah tombol</a></div>
+<div class="page-title"><div><p class="eyebrow">PENGELOLA LAYANAN</p><h1><?= $channel !== '' ? e($channels[$channel]['title']) : 'Halo, ' . e($_SESSION['username']) ?></h1><p class="muted"><?= $channel !== '' ? 'Kelola kontak dan tujuan layanan pada kanal ini.' : 'Pilih kanal untuk mengelola kontak dan layanan warga.' ?></p></div><?php if ($channel !== ''): ?><a class="button" id="service-add" href="<?= e(url($adminPath . '&tambah=1')) ?>#service-form">+ Tambah tombol</a><?php endif ?></div>
 <?php if ($flash): ?><div class="notice" role="status"><?= e($flash) ?></div><?php endif ?>
-<p><a class="button secondary" href="<?= e(url('admin/structure.php')) ?>">Kelola WhatsApp RW dan RT</a></p>
-<p><a class="button secondary" href="<?= e(url('admin/umkm.php')) ?>">Kelola Data UMKM</a></p>
+<?php if ($channel === 'ekonomi'): ?>
+<p><a class="button secondary" href="<?= e(url('admin/umkm.php')) ?>">Kelola Daftar UMKM</a></p>
+<?php endif ?>
+<?php if ($channel === ''): ?>
+<div class="section-title"><h2>Ringkasan pengunjung</h2><span><?= e(date('d/m/Y')) ?></span></div>
 <section aria-label="Statistik pengunjung" class="stats-grid">
 <?php foreach (['today' => 'Pengunjung hari ini', 'month' => 'Pengunjung bulan ini', 'total' => 'Total pengunjung'] as $key => $label): ?>
 <article class="panel stat"><span><?= e($label) ?></span><strong><?= number_format($stats[$key], 0, ',', '.') ?></strong><small><?= e($key === 'today' ? date('d/m/Y') : ($key === 'month' ? date('m/Y') : 'Sejak pencatatan dimulai')) ?></small></article>
 <?php endforeach ?>
 </section>
 <p class="stats-note">Pengunjung unik berdasarkan cookie, bukan jumlah refresh. Cookie yang sama dihitung sekali saja selama bulan berjalan. Zona waktu: <?= e(config()['timezone']) ?>. Admin yang sedang login dan bot yang dikenali tidak dihitung. Cookie/perangkat berbeda dapat terhitung lagi; angka ini bukan verifikasi identitas manusia.</p>
-<?php if ($delete): ?><section class="panel danger" aria-labelledby="delete-title"><h2 id="delete-title">Hapus tombol “<?= e($delete['label']) ?>”?</h2><p>Tombol akan dihapus permanen dari database. Anda bisa menonaktifkannya melalui Edit bila hanya ingin menyembunyikannya.</p><form method="post" class="actions"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= e($delete['id']) ?>"><button type="submit" class="button destructive">Ya, hapus tombol</button><a class="button secondary" href="<?= e(url('admin/')) ?>">Batal</a></form></section><?php endif ?>
-<section class="panel"><div class="section-title"><h2>Semua tombol</h2><span><?= count($services) ?> tombol</span></div>
+<div class="section-title"><div><p class="eyebrow">PENGELOLAAN</p><h2>Kanal layanan warga</h2></div><span>Pilih layanan yang ingin dikelola</span></div>
+<div class="channel-grid">
+<?php foreach ($channels as $key => $item): ?>
+<section class="panel channel-card"><span class="channel-symbol" aria-hidden="true"><?= service_icon($item['icon']) ?></span><h2><?= e($item['title']) ?></h2><p><?= e($key === 'administrasi' ? 'Kelola kontak administrasi serta nama dan WhatsApp pengurus RW/RT.' : ($key === 'ekonomi' ? 'Kelola layanan ekonomi dan daftar usaha UMKM warga.' : 'Kelola kontak sosial, kesehatan, keamanan, dan lingkungan.')) ?></p><a class="button secondary" href="<?= e(url('admin/?layanan=' . $key)) ?>">Kelola layanan</a></section>
+<?php endforeach ?>
+</div>
+<?php endif ?>
+<?php if ($channel !== ''): ?>
+<?php if ($channel === 'administrasi'): ?>
+<details class="admin-accordion" id="kontak-layanan" name="administrasi" <?= !$structureErrors && !isset($_GET['pengurus']) ? 'open' : '' ?>><summary>Kontak Layanan Administrasi</summary><div class="accordion-content">
+<?php endif ?>
+<?php if ($delete): ?><section class="panel danger" aria-labelledby="delete-title"><h2 id="delete-title">Hapus tombol “<?= e($delete['label']) ?>”?</h2><p>Tombol akan dihapus permanen dari database. Anda bisa menonaktifkannya melalui Edit bila hanya ingin menyembunyikannya.</p><form method="post" class="actions"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= e($delete['id']) ?>"><button type="submit" class="button destructive">Ya, hapus tombol</button><a class="button secondary" href="<?= e(url($adminPath)) ?>">Batal</a></form></section><?php endif ?>
+<section class="panel"><div class="section-title"><h2><?= $channel !== '' ? 'Kontak ' . e($channels[$channel]['title']) : 'Semua layanan' ?></h2><span><?= count($services) ?> tombol</span></div>
 <div class="table-scroll"><table><thead><tr><th>Urutan</th><th>Layanan</th><th>Tujuan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
-<?php foreach ($services as $service): ?><tr><td><?= e($service['sort_order']) ?></td><td><span aria-hidden="true"><?= service_icon($service['icon']) ?></span> <?= e($service['label']) ?></td><td><?php if ($service['target_type'] === 'whatsapp'): ?><span class="destination-summary">WhatsApp · <?= e($service['wa_phone']) ?></span><small class="message-summary"><?= e($service['wa_message'] ?: 'Tanpa pesan pembuka') ?></small><?php else: ?><span class="destination-summary">Website / aplikasi</span><?php endif ?><a class="test-target" href="<?= e(service_url($service)) ?>" target="_blank" rel="noopener noreferrer">Coba buka ↗</a></td><td><span class="badge <?= $service['is_active'] ? '' : 'inactive' ?>"><?= $service['is_active'] ? 'Aktif' : 'Nonaktif' ?></span></td><td><div class="actions"><a href="?edit=<?= e($service['id']) ?>#service-form">Edit</a><a class="danger-link" href="?delete=<?= e($service['id']) ?>#delete-title">Hapus</a></div></td></tr><?php endforeach ?>
-<?php if (!$services): ?><tr><td colspan="5">Belum ada tombol. Tambahkan melalui form di bawah.</td></tr><?php endif ?>
+<?php foreach ($services as $service): ?><tr><td><?= e($service['sort_order']) ?></td><td><span aria-hidden="true"><?= service_icon($service['icon']) ?></span> <?= e($service['label']) ?></td><td><?php if ($service['target_type'] === 'whatsapp'): ?><span class="destination-summary">WhatsApp · <?= e($service['wa_phone']) ?></span><small class="message-summary"><?= e($service['wa_message'] ?: 'Tanpa pesan pembuka') ?></small><?php else: ?><span class="destination-summary">Website / aplikasi</span><?php endif ?><a class="test-target" href="<?= e(service_url($service)) ?>" target="_blank" rel="noopener noreferrer">Coba buka ↗</a></td><td><span class="badge <?= $service['is_active'] ? '' : 'inactive' ?>"><?= $service['is_active'] ? 'Aktif' : 'Nonaktif' ?></span></td><td><div class="actions"><a class="button secondary" href="?<?= $channel !== '' ? 'layanan=' . e($channel) . '&amp;' : '' ?>edit=<?= e($service['id']) ?>#service-form">Edit</a><a class="button destructive" href="?<?= $channel !== '' ? 'layanan=' . e($channel) . '&amp;' : '' ?>delete=<?= e($service['id']) ?>#delete-title">Hapus</a></div></td></tr><?php endforeach ?>
+<?php if (!$services): ?><tr><td colspan="5">Belum ada tombol. Gunakan tombol Tambah tombol untuk membuat layanan.</td></tr><?php endif ?>
 </tbody></table></div></section>
-<section class="panel" id="service-form"><h2><?= $form['id'] === '' ? 'Tambah tombol' : 'Edit tombol' ?></h2>
+<?php if ($channel === 'administrasi'): ?>
+</div></details>
+<details class="admin-accordion" id="pengurus" name="administrasi" <?= $structureErrors || isset($_GET['pengurus']) ? 'open' : '' ?>><summary>Pengurus RW dan RT</summary><div class="accordion-content">
+<?php require dirname(__DIR__, 2) . '/app/admin-structure-form.php'; ?>
+</div></details>
+<?php endif ?>
+<dialog class="service-dialog" id="service-form" aria-labelledby="service-dialog-title" data-auto-open="<?= $errors || $form['id'] !== '' || isset($_GET['tambah']) ? '1' : '0' ?>"><div class="section-title"><h2 id="service-dialog-title"><?= $form['id'] === '' ? 'Tambah tombol' : 'Edit tombol' ?></h2><button type="button" class="button secondary" data-close-service aria-label="Tutup form">Tutup &times;</button></div>
 <?php if ($errors): ?><div class="notice error" role="alert"><ul><?php foreach ($errors as $error): ?><li><?= e($error) ?></li><?php endforeach ?></ul></div><?php endif ?>
-<form method="post" class="stack" action="<?= e(url('admin/')) ?>#service-form">
+<form method="post" class="stack" action="<?= e(url($adminPath)) ?>#service-form">
 <?= csrf_field() ?><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= e($form['id']) ?>">
-<label>Nama tombol<input name="label" required maxlength="120" value="<?= e($form['label']) ?>" placeholder="Contoh: Info Warga"></label>
+<label>Nama tombol<input name="label" required maxlength="120" value="<?= e($form['label']) ?>" placeholder="Contoh: Info Warga" autofocus></label>
 <fieldset class="icon-fieldset"><legend>Pilih gambar tombol</legend><p class="muted">Klik salah satu gambar. Tidak perlu mengetik emoji.</p><div class="icon-picker">
 <?php foreach (service_icons() as $key => $icon): ?><label class="icon-choice"><input type="radio" name="icon" value="<?= e($key) ?>" <?= $form['icon'] === $key ? 'checked' : '' ?> required><span><?= service_icon($key) ?><span><?= e($icon[0]) ?></span></span></label><?php endforeach ?>
 </div></fieldset>
@@ -97,6 +127,7 @@ admin_header('Dashboard');
 </fieldset>
 <fieldset class="destination-fields" data-destination="link"><legend>Website / aplikasi</legend><label>Alamat website<input name="url" maxlength="4096" value="<?= e($form['url']) ?>" placeholder="Tempel alamat website di sini" inputmode="url"><small>Khusus tujuan selain WhatsApp, misalnya aplikasi Tangerang Live.</small></label></fieldset>
 <div class="form-grid"><label>Urutan tampil<input name="sort_order" type="number" min="0" max="1000000" required value="<?= e($form['sort_order']) ?>"><small>Isi 1, 2, 3, dan seterusnya. Angka terkecil muncul lebih dahulu.</small></label><label class="checkbox"><input name="is_active" type="checkbox" value="1" <?= $form['is_active'] ? 'checked' : '' ?>> Tampilkan di website</label></div>
-<div class="actions"><button class="button" type="submit">Simpan tombol</button><a class="button secondary" href="<?= e(url('admin/')) ?>">Reset form</a></div>
-</form></section>
+<div class="actions"><button class="button" type="submit">Simpan tombol</button><button class="button secondary" type="button" data-close-service>Batal</button></div>
+</form></dialog>
+<?php endif ?>
 <?php admin_footer(); ?>

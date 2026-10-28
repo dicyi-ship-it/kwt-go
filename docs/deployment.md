@@ -1,4 +1,6 @@
-# Instalasi MySQL dan hosting
+# Instalasi MySQL dan hosting (opsional)
+
+Instalasi lokal sekarang memakai SQLite. Gunakan [panduan SQLite](sqlite.md) untuk hosting tanpa MySQL. Petunjuk di bawah hanya untuk instalasi yang tetap menggunakan MySQL. Pada `config.local.php`, ganti blok `db` dengan konfigurasi MySQL pada tabel di bawah (`driver` = `mysql`). Untuk instalasi MySQL lama, jalankan `php scripts/migrate-structure-contacts.php` agar kolom nama ketua tersedia.
 
 ## 1. Database
 

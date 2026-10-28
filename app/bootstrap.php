@@ -42,6 +42,20 @@ function db(): PDO
     static $pdo;
     if ($pdo === null) {
         $c = config()['db'];
+        if (($c['driver'] ?? 'mysql') === 'sqlite') {
+            $path = realpath($c['path'] ?? '');
+            $public = realpath(dirname(__DIR__) . '/public');
+            if ($path === false || !is_file($path) || str_starts_with(strtolower(str_replace('\\', '/', $path)), strtolower(str_replace('\\', '/', $public)) . '/')) {
+                throw new RuntimeException('File SQLite harus tersedia di luar folder public.');
+            }
+            $pdo = new PDO('sqlite:' . $path, null, null, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+            $pdo->exec('PRAGMA foreign_keys = ON');
+            $pdo->exec('PRAGMA busy_timeout = 5000');
+            return $pdo;
+        }
         foreach (['name', 'host'] as $key) {
             if (!preg_match('/^[a-zA-Z0-9_.-]+$/D', $c[$key] ?? '')) {
                 throw new RuntimeException('Nama database atau host tidak valid.');

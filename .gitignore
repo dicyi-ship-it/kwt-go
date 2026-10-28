@@ -1,2 +1,6 @@
 /config.local.php
 /.local/
+
+/storage/*
+!/storage/.gitkeep
+__pycache__/

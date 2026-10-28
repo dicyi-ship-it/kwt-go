@@ -1,16 +1,5 @@
 'use strict';
 
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: scrollBehavior() });
-}
-function scrollToBottom() {
-  window.scrollTo({ top: document.documentElement.scrollHeight, behavior: scrollBehavior() });
-}
-
-function scrollBehavior() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-}
-
 const modal = document.getElementById('share_modal');
 const trigger = document.querySelector('[data-target="#share_modal"] button');
 let backdrop;
@@ -61,8 +50,3 @@ if (navigator.share) {
   nativeShare.classList.remove('d-none');
   nativeShare.addEventListener('click', () => navigator.share({ title: document.title, url: nativeShare.dataset.shareUrl }).catch(() => {}));
 }
-function updateScroll() {
-  document.getElementById('top_left_floating').classList.toggle('d-none', document.documentElement.scrollHeight <= innerHeight);
-}
-window.addEventListener('load', updateScroll);
-window.addEventListener('resize', updateScroll);

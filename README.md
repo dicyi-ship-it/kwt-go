@@ -1,6 +1,6 @@
 # Mina Go — PHP + MySQL
 
-Website layanan warga RW 12 Blok Mina dengan login admin, statistik pengunjung unik, dan CRUD tombol. PHP biasa dengan PDO; tidak memakai framework, npm, atau proses build.
+Website layanan warga RW 12 Blok Mina dengan login admin, statistik pengunjung unik, pengelolaan nama/WhatsApp ketua RW dan RT, CRUD UMKM, dan CRUD tombol. PHP biasa dengan PDO; tidak memakai framework, npm, atau proses build.
 
 ## Fitur
 
@@ -14,13 +14,12 @@ Website layanan warga RW 12 Blok Mina dengan login admin, statistik pengunjung u
 
 ## Mulai
 
-Memerlukan PHP 8.2+ dengan `pdo_mysql` dan `mbstring`, serta MySQL/MariaDB. Pengujian lokal memakai PHP 8.2.12 dan MariaDB 10.4.32; MySQL server dan hosting produksi belum diuji langsung.
+Memerlukan PHP 8.2+ dengan `pdo_sqlite` dan `mbstring`. SQLite memakai file lokal tanpa server MySQL. Instalasi lokal sudah memakai `storage/mina.sqlite`; MySQL lama tidak dihapus.
 
-1. Buat database kosong dan user database.
-2. Import [schema.sql](database/schema.sql), lalu [seed.sql](database/seed.sql) **sekali** melalui phpMyAdmin atau CLI MySQL.
-3. Salin `config.example.php` menjadi `config.local.php`. Isi database, `base_url`, dan `app_key` acak.
-4. Buat akun admin melalui [panduan instalasi](docs/deployment.md). Tidak ada akun/password bawaan.
-5. Dari folder `output-rea/mina-go`, jalankan:
+1. Untuk memindahkan instalasi lokal ini ke hosting, ikuti [panduan SQLite](docs/sqlite.md). File database dan konfigurasi tidak masuk Git, jadi salin terpisah.
+2. Sesuaikan `config.local.php` dengan `config.example.php`: lokasi file SQLite, `base_url`, dan `app_key`. Pertahankan key lama saat memindahkan data yang sama.
+3. Arahkan document root ke folder `public`, dengan `storage` di luarnya. PHP memerlukan izin menulis folder `storage`.
+4. Untuk menjalankan lokal:
 
 ```sh
 php -S localhost:4173 -t public
@@ -56,7 +55,7 @@ mina-go/
 
 ## Dokumentasi
 
-- [Instalasi database dan hosting](docs/deployment.md).
+- [Instalasi SQLite dan hosting](docs/sqlite.md).
 - [Pengembangan dan pengelolaan tombol](docs/development.md).
 - [Definisi dan batas statistik](docs/analytics.md).
 - [Hasil pengujian dan bukti REA](docs/verification.md).

@@ -14,7 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = db();
     $pdo->exec('DELETE FROM login_attempts WHERE expires_at < CURRENT_TIMESTAMP');
     // Reserve the attempt atomically, including concurrent requests.
-    $q = $pdo->prepare('INSERT INTO login_attempts (bucket_hash, attempts, expires_at) VALUES (?, 1, ?) ON DUPLICATE KEY UPDATE attempts = attempts + 1');
+    $q = $pdo->prepare($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite'
+        ? 'INSERT INTO login_attempts (bucket_hash, attempts, expires_at) VALUES (?, 1, ?) ON CONFLICT(bucket_hash) DO UPDATE SET attempts = attempts + 1'
+        : 'INSERT INTO login_attempts (bucket_hash, attempts, expires_at) VALUES (?, 1, ?) ON DUPLICATE KEY UPDATE attempts = attempts + 1');
     $q->execute([$bucket, gmdate('Y-m-d H:i:s', time() + 1800)]);
     $q = $pdo->prepare('SELECT attempts FROM login_attempts WHERE bucket_hash = ?');
     $q->execute([$bucket]);
@@ -42,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 admin_header('Login admin');
 ?>
-<section class="panel login-panel"><p class="eyebrow">PENGELOLA LAYANAN</p><h1>Selamat datang</h1><p class="muted">Masuk untuk melihat pengunjung dan mengatur tombol layanan.</p>
+<section class="panel login-panel"><p class="eyebrow">VILLA ILHAMI BLOK MINA</p><h1>Login Pengelola</h1><p class="muted">Kelola data pengurus RW dan RT, daftar UMKM, serta layanan warga dalam satu tempat.</p>
 <?php if ($error): ?><div class="notice error" role="alert"><?= e($error) ?></div><?php endif ?>
 <form method="post" class="stack">
 <?= csrf_field() ?>

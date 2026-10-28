@@ -12,14 +12,14 @@ function require_admin(): void
 function admin_header(string $title): void
 {
     ?><!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title><?= e($title) ?> · Villa Ilhami Blok Mina</title><link rel="stylesheet" href="<?= e(url('admin.css')) ?>"></head>
-<body><div class="admin-shell"><header class="admin-header"><a class="brand" href="<?= e(url('admin/')) ?>"><?= service_icon('plant') ?> Villa Ilhami Blok Mina <span>Admin</span></a><nav><a href="<?= e(url()) ?>">Lihat website ↗</a><?php if (isset($_SESSION['admin_id'])): ?><form method="post" action="<?= e(url('admin/')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="logout"><button class="button secondary" type="submit">Keluar</button></form><?php endif ?></nav></header><main>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title><?= e($title) ?> · Villa Ilhami Blok Mina</title><link rel="stylesheet" href="<?= e(url('admin.css?v=' . filemtime(dirname(__DIR__) . '/public/admin.css'))) ?>"></head>
+<body><div class="admin-shell"><header class="admin-header"><a class="brand" href="<?= e(url('admin/')) ?>"><?= service_icon('plant') ?> Villa Ilhami Blok Mina <span>Admin</span></a><nav aria-label="Navigasi pengelola"><a href="<?= e(url()) ?>">Lihat website ↗</a><?php if (isset($_SESSION['admin_id'])): ?><a href="<?= e(url('admin/')) ?>" <?= basename($_SERVER['SCRIPT_NAME']) === 'index.php' && empty($_GET['layanan']) ? 'aria-current="page"' : '' ?>>Dashboard</a><?php foreach (service_channels() as $key => $item): ?><a href="<?= e(url('admin/?layanan=' . $key)) ?>" <?= (($_GET['layanan'] ?? '') === $key || ($key === 'administrasi' && basename($_SERVER['SCRIPT_NAME']) === 'structure.php') || ($key === 'ekonomi' && basename($_SERVER['SCRIPT_NAME']) === 'umkm.php')) ? 'aria-current="page"' : '' ?>><?= e($item['title']) ?></a><?php endforeach ?><form method="post" action="<?= e(url('admin/')) ?>"><?= csrf_field() ?><input type="hidden" name="action" value="logout"><button class="button secondary" type="submit">Keluar</button></form><?php endif ?></nav></header><main>
 <?php
 }
 
 function admin_footer(): void
 {
-    echo '</main><footer class="admin-footer">Villa Ilhami Blok Mina · Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas, Kota Tangerang, Banten 15138</footer></div><script src="' . e(url('admin.js')) . '" defer></script></body></html>';
+    echo '</main><footer class="admin-footer">Villa Ilhami Blok Mina · Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas, Kota Tangerang, Banten 15138</footer></div><script src="' . e(url('admin.js?v=' . filemtime(dirname(__DIR__) . '/public/admin.js'))) . '" defer></script></body></html>';
 }
 
 function validate_service(): array

@@ -30,3 +30,21 @@ function import_legacy_destination(string $url): array
     if (isset($query['text']) && !is_string($query['text'])) throw new RuntimeException('Pesan WhatsApp lama tidak valid.');
     return ['target_type' => 'whatsapp', 'wa_phone' => $phone, 'wa_message' => $query['text'] ?? '', 'url' => null];
 }
+
+function service_channels(): array
+{
+    return [
+    'administrasi' => ['title' => 'Layanan Administrasi', 'icon' => 'home', 'description' => 'Kenali pengurus RW dan RT, serta akses informasi administrasi warga.', 'detail' => 'Struktur RW 12 & RT 1-6'],
+    'ekonomi' => ['title' => 'Layanan Ekonomi', 'icon' => 'shop', 'description' => 'Temukan layanan usaha dan kegiatan ekonomi di lingkungan kita.', 'detail' => 'UMKM & kegiatan warga'],
+    'permasyarakatan' => ['title' => 'Layanan Permasyarakatan', 'icon' => 'people', 'description' => 'Akses layanan sosial, kesehatan, keamanan, dan lingkungan.', 'detail' => 'Sosial & lingkungan'],
+];
+}
+
+function service_channel(array $service): string
+{
+    return match ($service['icon']) {
+        'shop', 'plant' => 'ekonomi',
+        'home', 'megaphone', 'chat', 'phone' => 'administrasi',
+        default => 'permasyarakatan',
+    };
+}

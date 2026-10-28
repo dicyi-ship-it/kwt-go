@@ -11,7 +11,7 @@ $before = visitor_stats();
 $pdo->beginTransaction();
 try {
     $visitor = $pdo->prepare('INSERT INTO visitors (visitor_hash, first_seen, last_seen) VALUES (?, ?, ?)');
-    $day = $pdo->prepare('INSERT IGNORE INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?)');
+    $day = $pdo->prepare($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite' ? 'INSERT INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?) ON CONFLICT(visitor_hash, visit_date) DO NOTHING' : 'INSERT IGNORE INTO visitor_days (visitor_hash, visit_date) VALUES (?, ?)');
     $previousMonth = date('Y-m-d', strtotime('last day of previous month'));
     $firstDay = date('Y-m-01');
     $today = date('Y-m-d');
