@@ -1,0 +1,11 @@
+Options -Indexes
+RewriteEngine On
+
+# Only public application files may be served from the project root.
+RewriteRule ^(?:app|database|storage|scripts|panduan|template)(?:/|$) - [F,L,NC]
+RewriteRule (^|/)\. - [F,L]
+RewriteRule \.(?:zip|sql|sqlite|log|txt|md|docx|bak|ini)$ - [F,L,NC]
+RewriteRule ^config(?:\.local|\.example)?\.php$ - [F,L,NC]
+
+RewriteRule ^public(?:/|$) - [L]
+RewriteRule ^(.*)$ public/$1 [L]

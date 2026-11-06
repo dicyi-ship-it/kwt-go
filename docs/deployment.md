@@ -1,5 +1,16 @@
 # Instalasi dan migrasi MySQL (opsional)
 
+## Domain utama dengan document root tetap
+
+Jika hosting memakai folder proyek sebagai document root, sertakan `.htaccess`
+di root proyek. Aturan tersebut meneruskan permintaan ke `public/`, mematikan
+directory listing, dan memblokir akses HTTP ke folder privat serta berkas backup.
+Pertahankan aturan PHP milik hosting jika menggabungkan `.htaccess` yang sudah ada.
+Isi `base_url` dengan alamat domain tanpa `/public` dan tanpa slash terakhir.
+Konfigurasi database hosting tetap berada pada `config.local.php` yang tidak masuk Git.
+Jika muncul MySQL error 1045, periksa password user database dan hubungkan user
+ke database melalui panel hosting. Simpan dump SQL dan ZIP di luar folder publik.
+
 Konfigurasi default dan instalasi lokal sekarang memakai SQLite. Untuk hosting tanpa server MySQL, gunakan [panduan SQLite](sqlite.md). Dokumen ini hanya untuk instalasi MySQL/MariaDB yang tetap dipertahankan atau disiapkan sebagai sumber migrasi ke SQLite.
 
 ## Persyaratan dan konfigurasi
