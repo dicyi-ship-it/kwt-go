@@ -1,0 +1,288 @@
+{
+  "browser": "Playwright Chromium",
+  "capturedAt": "2026-11-06T13:46:20.673Z",
+  "source": "Kode terbaru dengan salinan data aktif",
+  "shots": [
+    {
+      "chapter": 1,
+      "title": "Beranda",
+      "url": "/",
+      "file": "01.png",
+      "steps": [
+        "Pilih Administrasi, Ekonomi, atau Permasyarakatan. Warga dapat mengakses portal tanpa login."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Bagikan portal",
+      "url": "/",
+      "file": "02.png",
+      "steps": [
+        "Pilih aplikasi berbagi atau salin tautan. Tutup panel setelah selesai."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Administrasi dan kontak ketua RT",
+      "url": "/?layanan=administrasi",
+      "file": "03.png",
+      "steps": [
+        "Kartu RT menampilkan nomor RT, nama ketua, dan nomor telepon. Pilih nomor untuk membuka kontak."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Layanan ekonomi",
+      "url": "/?layanan=ekonomi",
+      "file": "04.png",
+      "steps": [
+        "Pilih layanan ekonomi atau buka direktori UMKM."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Kontak permasyarakatan",
+      "url": "/?layanan=permasyarakatan",
+      "file": "05.png",
+      "steps": [
+        "Pilih kontak sesuai kebutuhan. PMI memiliki nomor posko ambulans dan permintaan darah yang terpisah."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Direktori UMKM",
+      "url": "/?layanan=ekonomi&direktori=umkm",
+      "file": "06.png",
+      "steps": [
+        "Klik kartu usaha untuk melihat detail dan foto produk."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Detail usaha dan foto produk",
+      "url": "/?layanan=ekonomi&direktori=umkm&usaha=4",
+      "file": "07.png",
+      "steps": [
+        "Pilih foto untuk melihat produk. Periksa alamat dan gunakan tombol WhatsApp untuk menghubungi pemilik."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Memilih keperluan surat",
+      "url": "/?layanan=administrasi&persuratan=1",
+      "file": "08.png",
+      "steps": [
+        "Pilih jenis surat yang dibutuhkan."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Memilih RT tujuan",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum",
+      "file": "09.png",
+      "steps": [
+        "Pilih RT sesuai tempat tinggal."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Pengantar Umum",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum&rt=rt1",
+      "file": "10.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Keterangan Domisili",
+      "url": "/?layanan=administrasi&persuratan=1&surat=domisili&rt=rt1",
+      "file": "11.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "SKTM",
+      "url": "/?layanan=administrasi&persuratan=1&surat=sktm&rt=rt1",
+      "file": "12.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Keterangan Usaha",
+      "url": "/?layanan=administrasi&persuratan=1&surat=usaha&rt=rt1",
+      "file": "13.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Pengantar Nikah",
+      "url": "/?layanan=administrasi&persuratan=1&surat=nikah&rt=rt1",
+      "file": "14.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Lapor Kelahiran",
+      "url": "/?layanan=administrasi&persuratan=1&surat=kelahiran&rt=rt1",
+      "file": "15.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Lapor Kematian",
+      "url": "/?layanan=administrasi&persuratan=1&surat=kematian&rt=rt1",
+      "file": "16.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Administrasi Lainnya",
+      "url": "/?layanan=administrasi&persuratan=1&surat=lainnya&rt=rt1",
+      "file": "17.png",
+      "steps": [
+        "Periksa jenis surat dan RT tujuan. Lanjutkan melalui WhatsApp, lengkapi kebutuhan, lalu kirim pesan di aplikasi WhatsApp. Portal tidak menerbitkan surat secara otomatis."
+      ]
+    },
+    {
+      "chapter": 1,
+      "title": "Portal pada ponsel",
+      "url": "/",
+      "file": "18.png",
+      "steps": [
+        "Pilih kanal layanan seperti pada komputer. Gulir halaman untuk melihat seluruh isinya."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Login admin",
+      "url": "/login.php",
+      "file": "19.png",
+      "steps": [
+        "Masukkan username dan password akun admin yang telah dibuat pengelola. Tidak ada akun bawaan."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Dashboard admin",
+      "url": "/admin/",
+      "file": "20.png",
+      "steps": [
+        "Periksa statistik pengunjung dan pilih kanal yang ingin dikelola."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Kelola administrasi",
+      "url": "/admin/?layanan=administrasi",
+      "file": "21.png",
+      "steps": [
+        "Gunakan Tambah tombol untuk membuat layanan. Edit mengubah layanan yang ada. Hapus membuka konfirmasi sebelum data dihapus."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Kelola ekonomi",
+      "url": "/admin/?layanan=ekonomi",
+      "file": "22.png",
+      "steps": [
+        "Gunakan Tambah tombol untuk membuat layanan. Edit mengubah layanan yang ada. Hapus membuka konfirmasi sebelum data dihapus."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Kelola permasyarakatan",
+      "url": "/admin/?layanan=permasyarakatan",
+      "file": "23.png",
+      "steps": [
+        "Gunakan Tambah tombol untuk membuat layanan. Edit mengubah layanan yang ada. Hapus membuka konfirmasi sebelum data dihapus."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Kontak pengurus RW dan RT",
+      "url": "/admin/?layanan=administrasi&pengurus=1",
+      "file": "24.png",
+      "steps": [
+        "Isi nama ketua dan nomor kontak yang benar, kemudian simpan. Data RT digunakan pada halaman depan dan persuratan."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Tambah layanan dan template logo",
+      "url": "/admin/?layanan=permasyarakatan",
+      "file": "25.png",
+      "steps": [
+        "Isi nama dan tujuan layanan. Pilih logo dari template yang tersedia untuk memakai kembali logo Tangerang, Polisi, PMI, Damkar, atau Puskesmas. Simpan setelah memeriksa nomor tujuan."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Daftar UMKM admin",
+      "url": "/admin/umkm.php",
+      "file": "26.png",
+      "steps": [
+        "Foto sampul dan jumlah foto terlihat pada daftar. Gunakan Tambah UMKM, Edit, Kelola foto, atau Hapus sesuai kebutuhan."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Popup tambah UMKM",
+      "url": "/admin/umkm.php?tambah=1",
+      "file": "27.png",
+      "steps": [
+        "Isi nama, kategori, deskripsi, alamat, dan nomor WhatsApp. Tekan Simpan UMKM. Batal atau Tutup menutup popup."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Popup edit UMKM",
+      "url": "/admin/umkm.php?edit=4&form=1#umkm-form",
+      "file": "28.png",
+      "steps": [
+        "Perbarui informasi usaha dan simpan. Pengelolaan foto dilakukan melalui Kelola foto pada daftar."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Upload urutan dan sampul foto usaha",
+      "url": "/admin/umkm.php?edit=4#umkm-photos",
+      "file": "29.png",
+      "steps": [
+        "Pilih beberapa foto, lalu tekan Unggah foto. Maksimal enam foto per usaha, masing masing 5 MB dan 8 megapiksel, dengan format JPG, PNG, atau WebP.",
+        "Gunakan Naik atau Turun untuk mengatur urutan. Jadikan sampul memindahkan foto menjadi foto pertama. Hapus foto menghapus foto tersebut dari galeri. Metadata tersimpan di database dan berkas foto berada di penyimpanan aplikasi."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Konfirmasi hapus UMKM",
+      "url": "/admin/umkm.php?delete=4",
+      "file": "30.png",
+      "steps": [
+        "Periksa nama usaha sebelum mengonfirmasi. Penghapusan usaha juga menghapus galeri terkait. Batalkan jika usaha masih diperlukan."
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "Keluar dari admin",
+      "url": "/login.php",
+      "file": "31.png",
+      "steps": [
+        "Gunakan Keluar setelah selesai, terutama pada komputer bersama."
+      ]
+    }
+  ],
+  "errors": []
+}
