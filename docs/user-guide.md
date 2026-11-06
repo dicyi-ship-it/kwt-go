@@ -51,7 +51,7 @@ Dashboard `/admin/` menampilkan ringkasan pengunjung dan pilihan kanal. Pengisia
 
 1. Masuk ke kanal yang sesuai.
 2. Tekan **Tambah tombol**; form terbuka dalam popup. **Edit** membuka popup berisi data yang dipilih.
-3. Isi nama, pilih ikon, dan pilih tujuan Chat WhatsApp atau Website/aplikasi lain.
+3. Isi nama, pilih ikon atau template logo, dan pilih tujuan Chat WhatsApp atau Website/aplikasi lain.
 4. Untuk WhatsApp, isi nomor dan pesan pembuka. Untuk website, isi URL `http://` atau `https://`.
 5. Tentukan urutan dan centang **Tampilkan di website**, lalu **Simpan tombol**.
 
@@ -65,14 +65,24 @@ Urutan terkecil tampil dahulu; urutan sama mengikuti ID. Hilangkan centang tampi
 
 Buka **Administrasi > accordion Pengurus RW dan RT**. Isi nama ketua dan WhatsApp untuk RW 12 serta RT 1-6, lalu **Simpan data pengurus**. Nama/nomor tampil di portal; nomor RT juga menjadi tujuan persuratan.
 
-Mengosongkan **kedua** kolom suatu jabatan lalu menyimpan menghapus data pengurus pada jabatan itu. Daftar jabatan tetap tersedia. Data sekretaris dan bendahara yang ditampilkan sebagai kerangka belum dapat dikelola lewat form ini.
+Mengosongkan **kedua** kolom suatu jabatan lalu menyimpan menghapus data pengurus pada jabatan itu. Daftar jabatan tetap tersedia. Data sekretaris dan bendahara RW yang ditampilkan sebagai kerangka belum dapat dikelola lewat form ini.
 
 ## UMKM
 
 Buka **Ekonomi > Kelola Daftar UMKM**. Tambah/Edit memerlukan nama usaha, kategori, deskripsi, dan alamat; WhatsApp opsional. Simpan usaha nyata setelah memperoleh data yang benar, lalu hilangkan tanda Data contoh. Hapus memerlukan konfirmasi.
+
+Tombol **Tambah UMKM** dan **Edit** membuka form dalam popup. Gunakan **Batal**, **Tutup**, atau Escape untuk menutupnya. Isian yang gagal validasi tetap tersedia di popup. Tombol **Kelola foto** membuka galeri tanpa membuka form data usaha.
+
+Setiap nama usaha dan tautan **Lihat usaha dan foto** di direktori membuka halaman detail dengan galeri. Untuk menambahkan foto, simpan usaha terlebih dahulu, lalu buka **Edit > Foto usaha**. Pilih beberapa foto sekaligus dan tekan **Unggah foto**. Batasnya 6 foto per usaha; JPG, PNG, atau WebP, maksimal 5 MB dan 8 megapiksel per foto. Foto lama tetap tersedia ketika menambahkan foto baru. Gunakan **Naik/Turun** untuk mengubah urutan dan **Jadikan sampul** untuk memilih gambar pertama; perubahan langsung tersimpan di database. Gunakan **Hapus foto** untuk menghapus satu gambar. Menghapus usaha juga menghapus foto-fotonya.
+
+Lima usaha contoh memiliki masing-masing lima gambar ilustrasi produk/aktivitas. Gambar ilustrasi yang sudah dimigrasikan dikelola seperti foto unggahan: dapat dihapus dan diurutkan. Foto baru ditambahkan ke galeri yang ada, maksimal enam gambar; hapus foto yang tidak diperlukan jika galeri penuh. Kartu direktori memakai gambar pertama sebagai sampul. Pilih foto pada halaman detail untuk melihat ukuran penuh.
 
 ## Keluar dan statistik
 
 Gunakan **Keluar** setelah selesai. Sesi berakhir setelah 30 menit tidak aktif atau maksimal 8 jam sejak login. Reset password melalui CLI tidak langsung mencabut sesi lain yang masih aktif.
 
 Pengunjung admin yang sedang login tidak dicatat. Angka hari ini/bulan ini/total menghitung cookie berbeda; refresh tidak menambah identitas yang sama. Penjelasan lengkap ada di [analitik](analytics.md).
+
+Kartu RT pada portal menampilkan nomor RT, nama ketua RT, dan nomor WhatsApp tanpa accordion. Foto JPEG baru disesuaikan dengan orientasi kamera sebelum disimpan; foto transparan diberi latar putih. Foto lama yang orientasinya sudah hilang perlu diunggah ulang jika tampil menyamping.
+
+Template logo Kota Tangerang, Polri, PMI, Damkar, dan Puskesmas tersedia di pemilih ikon Tambah/Edit layanan. Pilihan tersimpan pada kolom `services.icon` dan dipakai bersama oleh admin serta halaman publik; nomor tujuan tidak lagi menentukan logo. Logo dapat digunakan ulang pada beberapa layanan.

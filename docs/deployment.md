@@ -4,7 +4,7 @@ Konfigurasi default dan instalasi lokal sekarang memakai SQLite. Untuk hosting t
 
 ## Persyaratan dan konfigurasi
 
-Gunakan PHP 8.2+, `pdo_mysql`, mbstring, dan MySQL/MariaDB dengan InnoDB/utf8mb4. Arahkan document root ke folder `public/`, pertahankan struktur proyek, serta letakkan konfigurasi di luar akses HTTP. Petunjuk HTTPS/backup dan pemeriksaan pasca-upload ada di [panduan hosting](sqlite.md#hosting).
+Gunakan PHP 8.2+, `pdo_mysql`, mbstring, GD/EXIF untuk unggah foto, dan MySQL/MariaDB dengan InnoDB/utf8mb4. Arahkan document root ke folder `public/`, pertahankan struktur proyek, serta letakkan konfigurasi di luar akses HTTP. Petunjuk HTTPS/backup dan pemeriksaan pasca-upload ada di [panduan hosting](sqlite.md#hosting).
 
 Salin `config.example.php` hanya untuk instalasi baru. Ganti blok `db` pada konfigurasi lokal:
 
@@ -31,7 +31,7 @@ mysql -u mina_go -p mina_go < database/schema.sql
 mysql -u mina_go -p mina_go < database/seed.sql
 ```
 
-Impor hanya pada database kosong. Skema terkini sudah mencakup tujuh tabel, termasuk kontak RW/RT dan UMKM. Lima usaha demonstrasi dari `database/umkm-seed.sql` opsional, tidak wajib diimpor. Jangan mengimpor seed berulang atau menghapus database aktif untuk mengulang instalasi.
+Impor hanya pada database kosong. Skema terkini sudah mencakup delapan tabel, termasuk kontak RW/RT dan UMKM. Lima usaha demonstrasi dari `database/umkm-seed.sql` opsional, tidak wajib diimpor. Jangan mengimpor seed berulang atau menghapus database aktif untuk mengulang instalasi.
 
 Buat akun dengan `scripts/create-admin.php`, password melalui stdin. Contoh PowerShell dan batas password ada di [akun admin](sqlite.md#akun-admin); mekanisme pembuatan akun sama untuk kedua database. Tidak ada akun bawaan.
 
@@ -60,3 +60,5 @@ Menu pengelola terbaru dijelaskan di [panduan pengguna](user-guide.md): kontak l
 Backup database sebelum pembaruan. Jangan mengandalkan menyalin folder data MySQL aktif; gunakan fasilitas backup hosting atau dump konsisten. Jangan memindahkan akun pengunjung tes ke produksi. Tidak ada migrasi skema otomatis saat aplikasi dibuka.
 
 Dukungan MySQL terbaru belum diuji ulang menyeluruh; hasil MariaDB versi terdahulu dipertahankan sebagai [arsip historis](history-php-mysql.md), bukan bukti uji hosting saat ini.
+
+Untuk instalasi lama, migrasikan foto melalui panduan [migrasi foto ke database](development.md#migrasi-foto-ke-database). Sertakan folder `storage/umkm/` ketika backup atau memindahkan hosting.

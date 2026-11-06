@@ -1,0 +1,211 @@
+{
+  "browser": "Playwright Chromium",
+  "viewport": "1280 x 900 desktop, 1280 x 2000 formulir panjang, 390 x 844 ponsel",
+  "shots": [
+    {
+      "id": "01-beranda",
+      "title": "Beranda portal warga",
+      "url": "/",
+      "file": "01-beranda.png"
+    },
+    {
+      "id": "02-bagikan",
+      "title": "Bagikan portal",
+      "url": "/",
+      "file": "02-bagikan.png"
+    },
+    {
+      "id": "03-administrasi",
+      "title": "Layanan Administrasi",
+      "url": "/?layanan=administrasi",
+      "file": "03-administrasi.png"
+    },
+    {
+      "id": "04-ekonomi",
+      "title": "Layanan Ekonomi",
+      "url": "/?layanan=ekonomi",
+      "file": "04-ekonomi.png"
+    },
+    {
+      "id": "05-permasyarakatan",
+      "title": "Layanan Permasyarakatan",
+      "url": "/?layanan=permasyarakatan",
+      "file": "05-permasyarakatan.png"
+    },
+    {
+      "id": "06-umkm-publik",
+      "title": "Direktori UMKM",
+      "url": "/?layanan=ekonomi&direktori=umkm",
+      "file": "06-umkm-publik.png"
+    },
+    {
+      "id": "07-pilih-surat",
+      "title": "Pilihan layanan surat",
+      "url": "/?layanan=administrasi&persuratan=1",
+      "file": "07-pilih-surat.png"
+    },
+    {
+      "id": "08-pilih-rt",
+      "title": "Pilihan RT tujuan",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum",
+      "file": "08-pilih-rt.png"
+    },
+    {
+      "id": "09-surat-umum",
+      "title": "Pengantar Umum",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum&rt=rt1",
+      "file": "09-surat-umum.png"
+    },
+    {
+      "id": "10-surat-domisili",
+      "title": "Keterangan Domisili",
+      "url": "/?layanan=administrasi&persuratan=1&surat=domisili&rt=rt1",
+      "file": "10-surat-domisili.png"
+    },
+    {
+      "id": "11-surat-sktm",
+      "title": "Surat Keterangan Tidak Mampu",
+      "url": "/?layanan=administrasi&persuratan=1&surat=sktm&rt=rt1",
+      "file": "11-surat-sktm.png"
+    },
+    {
+      "id": "12-surat-usaha",
+      "title": "Keterangan Usaha",
+      "url": "/?layanan=administrasi&persuratan=1&surat=usaha&rt=rt1",
+      "file": "12-surat-usaha.png"
+    },
+    {
+      "id": "13-surat-nikah",
+      "title": "Pengantar Nikah",
+      "url": "/?layanan=administrasi&persuratan=1&surat=nikah&rt=rt1",
+      "file": "13-surat-nikah.png"
+    },
+    {
+      "id": "14-surat-kelahiran",
+      "title": "Lapor Kelahiran",
+      "url": "/?layanan=administrasi&persuratan=1&surat=kelahiran&rt=rt1",
+      "file": "14-surat-kelahiran.png"
+    },
+    {
+      "id": "15-surat-kematian",
+      "title": "Lapor Kematian",
+      "url": "/?layanan=administrasi&persuratan=1&surat=kematian&rt=rt1",
+      "file": "15-surat-kematian.png"
+    },
+    {
+      "id": "16-surat-lainnya",
+      "title": "Administrasi Lainnya",
+      "url": "/?layanan=administrasi&persuratan=1&surat=lainnya&rt=rt1",
+      "file": "16-surat-lainnya.png"
+    },
+    {
+      "id": "17-kontak-kosong",
+      "title": "RT dengan kontak belum tersedia",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum&rt=rt2",
+      "file": "17-kontak-kosong.png"
+    },
+    {
+      "id": "18-login",
+      "title": "Login pengelola",
+      "url": "/login.php",
+      "file": "18-login.png"
+    },
+    {
+      "id": "19-dashboard",
+      "title": "Dashboard pengelola",
+      "url": "/admin/",
+      "file": "19-dashboard.png"
+    },
+    {
+      "id": "20-admin-administrasi",
+      "title": "Kelola Administrasi",
+      "url": "/admin/?layanan=administrasi",
+      "file": "20-admin-administrasi.png"
+    },
+    {
+      "id": "21-pengurus",
+      "title": "Kelola pengurus RW dan RT",
+      "url": "/admin/?layanan=administrasi&pengurus=1",
+      "file": "21-pengurus.png"
+    },
+    {
+      "id": "22-admin-ekonomi",
+      "title": "Kelola Ekonomi",
+      "url": "/admin/?layanan=ekonomi",
+      "file": "22-admin-ekonomi.png"
+    },
+    {
+      "id": "23-admin-permasyarakatan",
+      "title": "Kelola Permasyarakatan",
+      "url": "/admin/?layanan=permasyarakatan",
+      "file": "23-admin-permasyarakatan.png"
+    },
+    {
+      "id": "24-tambah-whatsapp",
+      "title": "Form tombol WhatsApp",
+      "url": "/admin/?layanan=administrasi",
+      "file": "24-tambah-whatsapp.png"
+    },
+    {
+      "id": "25-tambah-website",
+      "title": "Form tombol website",
+      "url": "/admin/?layanan=administrasi",
+      "file": "25-tambah-website.png"
+    },
+    {
+      "id": "26-edit-tombol",
+      "title": "Edit tombol layanan",
+      "url": "/admin/?layanan=administrasi&edit=1#service-form",
+      "file": "26-edit-tombol.png"
+    },
+    {
+      "id": "27-hapus-tombol",
+      "title": "Konfirmasi hapus tombol",
+      "url": "/admin/?layanan=administrasi&delete=1#delete-title",
+      "file": "27-hapus-tombol.png"
+    },
+    {
+      "id": "28-admin-umkm",
+      "title": "Daftar UMKM pengelola",
+      "url": "/admin/umkm.php",
+      "file": "28-admin-umkm.png"
+    },
+    {
+      "id": "29-tambah-umkm",
+      "title": "Form tambah UMKM",
+      "url": "/admin/umkm.php",
+      "file": "29-tambah-umkm.png"
+    },
+    {
+      "id": "30-edit-umkm",
+      "title": "Form edit UMKM",
+      "url": "/admin/umkm.php?edit=4#umkm-form",
+      "file": "30-edit-umkm.png"
+    },
+    {
+      "id": "31-hapus-umkm",
+      "title": "Konfirmasi hapus UMKM",
+      "url": "/admin/umkm.php?delete=4",
+      "file": "31-hapus-umkm.png"
+    },
+    {
+      "id": "32-keluar",
+      "title": "Kembali ke login setelah keluar",
+      "url": "/login.php",
+      "file": "32-keluar.png"
+    },
+    {
+      "id": "33-ponsel-beranda",
+      "title": "Beranda pada ponsel",
+      "url": "/",
+      "file": "33-ponsel-beranda.png"
+    },
+    {
+      "id": "34-ponsel-surat",
+      "title": "Persuratan pada ponsel",
+      "url": "/?layanan=administrasi&persuratan=1&surat=umum&rt=rt1",
+      "file": "34-ponsel-surat.png"
+    }
+  ],
+  "errors": []
+}

@@ -16,6 +16,13 @@ csrf = Page(admin.request('login.php')[2]).csrf
 assert admin.request('login.php', {'username': username, 'password': password})[0] == 403
 assert admin.request('login.php', {'csrf': csrf, 'username': username, 'password': password})[0] == 303
 assert admin.request('admin/')[0] == 200
+public_services = Client(base).request('?layanan=permasyarakatan')[2]
+admin_services = admin.request('admin/?layanan=permasyarakatan')[2]
+for logo, count in [('kota-tangerang.png',1),('polri.png',1),('pmi.svg',2),('damkar.png',1),('puskesmas-panunggangan-barat.jpg',1)]:
+    assert public_services.count('/assets/' + logo) == count
+    assert admin_services.count('/assets/' + logo) == count + 1, 'Admin includes the reusable logo picker'
+assert 'Telepon &middot; 112' in admin_services and 'Telepon &middot; 110' in admin_services
+assert 'Tidak tampil di halaman publik' in admin_services
 dashboard = admin.request('admin/')[2]
 assert dashboard.count('>Kelola layanan</a>') == 3
 assert 'id="service-form"' not in dashboard and '?edit=' not in dashboard
@@ -37,6 +44,10 @@ public = Client(base)
 html = public.request('?layanan=administrasi')[2]
 assert '&lt;Pak RT Uji&gt;' in html and '<Pak RT Uji>' not in html
 assert 'https://wa.me/6281234567890' in html
+rt_cards = re.findall(r'<article class="rt-card".*?</article>', html, re.S)
+assert len(rt_cards) == 6
+assert '&lt;Pak RT Uji&gt;' in rt_cards[0] and '081234567890' in rt_cards[0]
+assert all('Sekretaris RT' not in card and 'Bendahara RT' not in card and '<details' not in card for card in rt_cards)
 letters = '?layanan=administrasi&persuratan=1'
 administration = public.request('?layanan=administrasi')[2]
 access_services = administration.split('id="services-title"', 1)[1].split('</section>', 1)[0]
@@ -121,6 +132,22 @@ status, headers, _ = admin.request(path, {'csrf': csrf, 'action': 'delete', 'id'
 assert status == 303 and 'layanan=administrasi' in headers['Location']
 assert 'Kontak Diubah' not in admin.request(path)[2]
 print('PASS: admin/public channel grouping, channel-specific service CRUD and redirects')
+
+path = 'admin/?layanan=permasyarakatan'
+csrf = Page(admin.request(path)[2]).csrf
+logo_service = {'csrf': csrf, 'action': 'save', 'id': '', 'label': 'Template Logo Uji', 'icon': 'logo_pmi', 'target_type': 'whatsapp', 'wa_phone': '081234567890', 'wa_message': 'Uji', 'sort_order': '1', 'is_active': '1'}
+assert admin.request(path, logo_service)[0] == 303
+logo_id = str(max(map(int, re.findall(r'edit=(\d+)', admin.request(path)[2]))))
+for icon, asset in [('logo_pmi','pmi.svg'),('logo_damkar','damkar.png')]:
+    assert admin.request(path, {**logo_service, 'id': logo_id, 'icon': icon})[0] == 303
+    html = public.request('?layanan=permasyarakatan')[2]
+    card = next(card for card in re.findall(r'<a class="service-card".*?</a>', html, re.S) if 'Template Logo Uji' in card)
+    assert asset in card and 'wa.me/6281234567890' in card
+    edit = admin.request(path + '&edit=' + logo_id)[2]
+    assert f'value="{icon}" checked' in edit
+assert admin.request(path, {'csrf':csrf,'action':'delete','id':logo_id})[0] == 303
+print('PASS: reusable logos persist through create/edit with arbitrary contact numbers')
+
 
 client = Client(base)
 csrf = Page(client.request('login.php')[2]).csrf

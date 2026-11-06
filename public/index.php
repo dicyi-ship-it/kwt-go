@@ -14,8 +14,18 @@ $channel = $_GET['layanan'] ?? '';
 if (!is_string($channel) || !isset($channels[$channel])) $channel = '';
 $channelServices = array_filter($services, static fn(array $service): bool => service_channel($service) === $channel);
 require dirname(__DIR__) . '/app/umkm.php';
+require dirname(__DIR__) . '/app/umkm-photos.php';
 $showUmkm = $channel === 'ekonomi' && ($_GET['direktori'] ?? '') === 'umkm';
 $businesses = $showUmkm ? umkm_list() : [];
+$businessDetail = null;
+if ($showUmkm && isset($_GET['usaha'])) {
+    $businessId = $_GET['usaha'];
+    if (!is_string($businessId) || !preg_match('/^[1-9][0-9]{0,9}$/D', $businessId) || (float) $businessId > 4294967295) {
+        http_response_code(400); exit('ID usaha tidak valid.');
+    }
+    foreach ($businesses as $business) if ((string) $business['id'] === $businessId) $businessDetail = $business;
+    if (!$businessDetail) { http_response_code(404); exit('Usaha tidak ditemukan.'); }
+}
 $showLetters = $channel === 'administrasi' && ($_GET['persuratan'] ?? '') === '1';
 $visitProof = prepare_visit();
 ?>
@@ -27,7 +37,7 @@ $visitProof = prepare_visit();
   <?php if ($visitProof !== null): ?><meta name="visit-proof" content="<?= e($visitProof) ?>" data-endpoint="<?= e(url('track.php')) ?>"><?php endif ?>
   <meta name="theme-color" content="#185b36">
   <meta name="description" content="Layanan warga Perumahan Villa Ilhami Blok Mina. Jl. Mina Raya, Panunggangan Bar., Kec. Cibodas, Kota Tangerang, Banten 15138.">
-  <title>Villa Ilhami Blok Mina — Layanan Warga</title>
+  <title><?= $businessDetail ? e($businessDetail['name']) . ' | ' : '' ?>Villa Ilhami Blok Mina | Layanan Warga</title>
   <link rel="stylesheet" href="assets/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css?v=<?= filemtime(__DIR__ . '/styles.css') ?>">
 </head>
@@ -70,12 +80,14 @@ $visitProof = prepare_visit();
       </section>
       <?php else: ?>
       <nav class="breadcrumb-nav" aria-label="Jejak navigasi"><a href="<?= e(url()) ?>">Beranda</a><span aria-hidden="true">/</span><span aria-current="page"><?= e($channels[$channel]['title']) ?></span></nav>
+      <?php if (!$businessDetail): ?>
       <section class="welcome channel-welcome" aria-labelledby="page-title">
         <p class="eyebrow">RW 12 &middot; KELURAHAN PANUNGGANGAN BARAT</p>
         <h1 id="page-title"><?= $showLetters ? 'Persuratan Warga' : ($showUmkm ? 'Direktori UMKM Warga' : e($channels[$channel]['title'])) ?></h1>
         <p class="welcome-description"><?= $showLetters ? 'Pilih keperluan surat, tentukan RT, lalu hubungi pengurus melalui WhatsApp.' : e($channels[$channel]['description']) ?></p>
       </section>
-      <?php if (!$showLetters): ?>
+      <?php endif ?>
+      <?php if (!$showLetters && !$businessDetail): ?>
       <nav class="channel-nav" aria-label="Pilihan layanan">
         <?php foreach ($channels as $key => $item): ?>
         <a href="<?= e(url('?layanan=' . $key)) ?>" <?= $channel === $key ? 'aria-current="page"' : '' ?>><?= e($item['title']) ?></a>
@@ -88,7 +100,7 @@ $visitProof = prepare_visit();
       <?php if ($channel === 'administrasi'): ?>
       <section class="organization" aria-labelledby="organization-title">
         <div class="section-heading"><div><p class="section-kicker">PENGURUS LINGKUNGAN</p><h2 id="organization-title">Struktur Pengurus RW 12</h2></div><span>Kelurahan Panunggangan Barat</span></div>
-        <p class="organization-note">Kontak ketua RW dan RT dapat dihubungi melalui WhatsApp. Data yang belum tersedia ditandai dengan ?Belum diisi?.</p>
+        <p class="organization-note">Hubungi ketua RW atau RT melalui nomor WhatsApp yang tersedia.</p>
         <div class="rw-chart" aria-label="Kerangka struktur RW 12">
           <div class="officer officer-lead"><span class="officer-avatar" aria-hidden="true"><?= service_icon('home') ?></span><h3>Ketua RW 12</h3><p><?= e(($structureContacts['rw12']['name'] ?? '') ?: 'Belum diisi') ?></p></div>
           <div class="officer-branches">
@@ -98,34 +110,38 @@ $visitProof = prepare_visit();
           </div>
           <?php structure_contact_card('rw12', $structureContacts); ?>
         </div>
-        <div class="section-heading rt-heading"><h2>Struktur Pengurus RT</h2><span>RT 1 hingga RT 6</span></div>
+        <div class="section-heading rt-heading"><h2>Kontak Ketua RT</h2><span>RT 1 hingga RT 6</span></div>
         <div class="rt-grid">
           <?php for ($rt = 1; $rt <= 6; $rt++): ?>
-          <details class="rt-card">
-            <summary><span class="rt-number"><?= sprintf('%02d', $rt) ?></span><span><strong>RT <?= $rt ?></strong><small>RW 12 &middot; Panunggangan Barat</small></span><span class="rt-expand" aria-hidden="true">+</span></summary>
-            <div class="rt-officers">
-              <?php foreach (['Ketua RT', 'Sekretaris RT', 'Bendahara RT'] as $role): ?>
-              <div><h3><?= e($role) ?> <?= $rt ?></h3><p><?= e($role === 'Ketua RT' ? (($structureContacts['rt' . $rt]['name'] ?? '') ?: 'Belum diisi') : 'Belum diisi') ?></p></div>
-              <?php endforeach ?>
-            </div>
-            <?php structure_contact_card('rt' . $rt, $structureContacts); ?>
-          </details>
+          <?php $contact = $structureContacts['rt' . $rt] ?? []; $phone = $contact['wa_phone'] ?? ''; ?>
+          <article class="rt-card" aria-label="Kontak RT <?= $rt ?>">
+            <h3>RT <?= sprintf('%02d', $rt) ?></h3>
+            <p class="rt-chair"><?= e(($contact['name'] ?? '') ?: 'Nama ketua RT belum diisi') ?></p>
+            <?php if ($phone !== ''): ?><a class="rt-phone" href="<?= e('https://wa.me/' . $phone) ?>" aria-label="<?= e('Hubungi ketua RT ' . $rt . ' melalui WhatsApp') ?>"><?= e(preg_replace('/^62/', '0', $phone)) ?></a>
+            <?php else: ?><p class="rt-phone-empty">Nomor telepon belum diisi</p><?php endif ?>
+          </article>
           <?php endfor ?>
         </div>
       </section>
       <?php endif ?>
       <?php if ($showUmkm): ?>
+      <?php if ($businessDetail): ?>
+      <?php require dirname(__DIR__) . '/app/umkm-detail-view.php'; ?>
+      <?php else: ?>
       <section class="services" aria-labelledby="umkm-title">
         <div class="section-heading"><h2 id="umkm-title">Usaha dari lingkungan kita</h2><span><?= count($businesses) ?> UMKM</span></div>
-        <p class="organization-note">Kenali produk dan jasa warga. Usaha bertanda &ldquo;Data contoh&rdquo; merupakan dataset demonstrasi, bukan usaha yang telah terverifikasi.</p>
+        <p class="organization-note">Kenali produk dan jasa warga.</p>
         <div class="umkm-grid">
           <?php foreach ($businesses as $business): ?>
+          <?php $gallery = umkm_gallery($business); ?>
           <article class="umkm-card">
-            <div class="umkm-card-top"><span class="channel-icon" aria-hidden="true"><?= service_icon('shop') ?></span><?php if ($business['is_sample']): ?><span class="umkm-sample">Data contoh</span><?php endif ?></div>
+            <?php if ($gallery): ?><a class="umkm-cover" href="<?= e(url('?layanan=ekonomi&direktori=umkm&usaha=' . $business['id'])) ?>"><img src="<?= e($gallery[0]['src']) ?>" alt="<?= e($gallery[0]['alt']) ?>" width="480" height="360" loading="lazy"></a><?php endif ?>
+            <?php if (!$gallery): ?><div class="umkm-card-top"><span class="channel-icon" aria-hidden="true"><?= service_icon('shop') ?></span></div><?php endif ?>
             <span class="umkm-category"><?= e($business['category']) ?></span>
-            <h3><?= e($business['name']) ?></h3>
+            <h3><a href="<?= e(url('?layanan=ekonomi&direktori=umkm&usaha=' . $business['id'])) ?>"><?= e($business['name']) ?></a></h3>
             <p class="umkm-description"><?= e($business['description']) ?></p>
             <p class="umkm-address"><strong>Alamat usaha</strong><?= e($business['address']) ?></p>
+            <a class="umkm-detail-link" href="<?= e(url('?layanan=ekonomi&direktori=umkm&usaha=' . $business['id'])) ?>">Lihat usaha dan foto</a>
             <?php if ($business['wa_phone'] !== ''): ?><a class="umkm-contact" href="<?= e('https://wa.me/' . $business['wa_phone']) ?>">Hubungi via WhatsApp <span aria-hidden="true">&nearr;</span></a>
             <?php else: ?><span class="umkm-contact umkm-contact-empty">WhatsApp belum tersedia</span><?php endif ?>
           </article>
@@ -133,6 +149,7 @@ $visitProof = prepare_visit();
         </div>
         <?php if (!$businesses): ?><p class="organization-note">Belum ada UMKM yang terdaftar.</p><?php endif ?>
       </section>
+      <?php endif ?>
       <?php else: ?>
       <section class="services" aria-labelledby="services-title">
         <div class="section-heading"><h2 id="services-title">Akses Layanan</h2><span><?= count($channelServices) + ($channel === 'administrasi' ? 1 : 0) ?> layanan</span></div>

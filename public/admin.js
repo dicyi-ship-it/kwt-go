@@ -21,17 +21,21 @@ function openLinkedAccordion() {
 window.addEventListener('hashchange', openLinkedAccordion);
 openLinkedAccordion();
 
-const serviceDialog = document.getElementById('service-form');
-if (serviceDialog) {
-  const addButton = document.getElementById('service-add');
+for (const [dialogId, addId, closeSelector] of [
+  ['service-form', 'service-add', '[data-close-service]'],
+  ['umkm-form', 'umkm-add', '[data-close-umkm]'],
+]) {
+  const dialog = document.getElementById(dialogId);
+  if (!dialog) continue;
+  const addButton = document.getElementById(addId);
   addButton.addEventListener('click', event => {
-    if (serviceDialog.querySelector('[name="id"]').value !== '') return;
+    if (dialog.querySelector('[name="id"]').value !== '') return;
     event.preventDefault();
-    serviceDialog.showModal();
+    dialog.showModal();
   });
-  for (const button of serviceDialog.querySelectorAll('[data-close-service]')) {
-    button.addEventListener('click', () => serviceDialog.close());
+  for (const button of dialog.querySelectorAll(closeSelector)) {
+    button.addEventListener('click', () => dialog.close());
   }
-  serviceDialog.addEventListener('close', () => addButton.focus());
-  if (serviceDialog.dataset.autoOpen === '1') serviceDialog.showModal();
+  dialog.addEventListener('close', () => addButton.focus());
+  if (dialog.dataset.autoOpen === '1') dialog.showModal();
 }

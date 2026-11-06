@@ -36,11 +36,11 @@ function validate_service(): array
         $data['url'] = null;
     } elseif ($data['target_type'] === 'link') {
         $u = parse_url($data['url']);
-        if (strlen($data['url']) > 4096 || preg_match('/[\x00-\x1f\x7f]/', $data['url'])
+        if (!preg_match('/^tel:\+?[0-9]{3,15}$/D', $data['url']) && (strlen($data['url']) > 4096 || preg_match('/[\x00-\x1f\x7f]/', $data['url'])
         || !filter_var(str_replace(' ', '%20', $data['url']), FILTER_VALIDATE_URL)
         || !is_array($u) || !in_array($u['scheme'] ?? '', ['http', 'https'], true)
-        || isset($u['user']) || isset($u['pass'])) {
-            $errors[] = 'Alamat website harus berupa link http:// atau https:// yang valid, maksimal 4096 byte.';
+        || isset($u['user']) || isset($u['pass']))) {
+            $errors[] = 'Isi link http:// atau https:// yang valid (maksimal 4096 byte), atau nomor telepon seperti tel:112.';
         }
         $data['wa_phone'] = null;
         $data['wa_message'] = null;

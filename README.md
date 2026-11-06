@@ -35,6 +35,10 @@ Biarkan terminal terbuka. Jika Laragon sudah melayani port 4173, langsung buka a
 
 ## Panduan
 
+Panduan lengkap dengan screenshot seluruh halaman dan versi Word tersedia di
+[Dokumentasi lengkap Mina Go](docs/manual/README.md). Panduan ini mencakup
+penggunaan warga, pengelolaan admin, serta operasional dengan MySQL.
+
 | Kebutuhan | Dokumen |
 | --- | --- |
 | Penggunaan warga dan pengelola | [Panduan pengguna](docs/user-guide.md) |

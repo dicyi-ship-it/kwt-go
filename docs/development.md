@@ -12,7 +12,7 @@ Konfigurasi dibaca dari `config.local.php`. Variabel lingkungan `MINA_CONFIG` da
 | --- | --- |
 | `app/bootstrap.php` | Konfigurasi, koneksi PDO SQLite/MySQL, header, sesi, CSRF, escaping dan URL |
 | `app/services.php` | Kanal bersama publik/admin, pemetaan ikon, normalisasi WA dan link layanan |
-| `app/icons.php` | Katalog emoji yang dipakai publik/admin |
+| `app/icons.php` | Katalog emoji dan template logo bersama publik/admin |
 | `app/admin.php` | Layout/navigasi admin dan validasi layanan |
 | `app/structure-contacts.php` | Nama/WhatsApp pengurus, simpan/hapus kontak, kartu publik |
 | `app/admin-structure.php` | Pemrosesan form pengurus dengan transaksi |
@@ -20,6 +20,8 @@ Konfigurasi dibaca dari `config.local.php`. Variabel lingkungan `MINA_CONFIG` da
 | `app/letters.php` | Daftar layanan surat dan penyusunan pesan |
 | `app/letters-view.php` | Pilihan surat, RT, ringkasan dan tautan WhatsApp |
 | `app/umkm.php` | Validasi dan pembacaan UMKM |
+| `app/umkm-photos.php` | Validasi unggahan, pengolahan JPEG dan penyimpanan foto UMKM |
+| `public/umkm-photo.php` | Menyajikan foto JPEG usaha yang masih tersedia |
 | `app/visitors.php` | Cookie, bukti kunjungan, penyimpanan dan statistik |
 | `public/index.php` | Portal, kanal, struktur, direktori dan persuratan |
 | `public/admin/index.php` | Dashboard, kanal, CRUD layanan, popup dan logout |
@@ -28,7 +30,7 @@ Konfigurasi dibaca dari `config.local.php`. Variabel lingkungan `MINA_CONFIG` da
 | `public/login.php` | Login dan batas percobaan |
 | `public/track.php` | Endpoint pencatatan kunjungan POST |
 
-Skema SQLite berada di `database/schema.sqlite.sql`; MySQL di `database/schema.sql`. Tujuh tabel: `admins`, `services`, `visitors`, `visitor_days`, `login_attempts`, `structure_contacts`, dan `umkm`. Konfigurasi default SQLite; konfigurasi MySQL lama tetap dikenali.
+Skema SQLite berada di `database/schema.sqlite.sql`; MySQL di `database/schema.sql`. Delapan tabel: `admins`, `services`, `visitors`, `visitor_days`, `login_attempts`, `structure_contacts`, `umkm`, dan `umkm_photos`. Konfigurasi default SQLite; konfigurasi MySQL lama tetap dikenali.
 
 ## Perubahan fitur
 
@@ -50,6 +52,8 @@ Popup layanan memakai elemen native `dialog` dengan `showModal()`. Accordion mem
 ```powershell
 php tests/service_inputs.php
 php tests/umkm.php
+php tests/umkm_gallery.php
+python tests/umkm_photos_http.py
 php tests/letters.php
 node tests/admin_dialog.cjs
 node --check public/admin.js
@@ -113,4 +117,14 @@ Gunakan username yang ada pada salinan tes. `Read-Host` di contoh tes menampilka
 
 ## Pemeriksaan manual sebelum rilis
 
+Foto UMKM memerlukan ekstensi PHP GD serta EXIF (untuk orientasi JPEG), dan izin tulis pada `storage/umkm/`. Foto disimpan di luar `public/` dan diolah ulang menjadi JPEG tanpa metadata. Tabel `umkm_photos` menyimpan pemilik, nama file, urutan, dan penanda ilustrasi. Galeri publik dan admin membaca tabel yang sama; foto pertama menjadi sampul. Sertakan `storage/umkm/` dalam backup dan restore bersama database. `tests/umkm_photos_http.py` membuat database SQLite, akun, server, dan direktori foto uji sendiri; tidak memakai konfigurasi atau data aktif.
+
 Periksa publik, login, kanal admin, accordion, popup dan persuratan pada desktop serta HP. Uji keyboard/fokus, Escape, isian error yang tetap terlihat, ikon, tombol tanpa nomor RT, label UMKM contoh, serta URL di subfolder jika digunakan. Catat hasil aktual dan keterbatasan di [verifikasi](verification.md).
+
+## Migrasi foto ke database
+
+Pada database lama, jalankan `php scripts/migrate-umkm-photos.php --import-existing` satu kali untuk mendaftarkan foto unggahan serta gambar contoh yang tersedia. Cadangan metadata dibuat di `.local/backups/`. Jika akun aplikasi tidak memiliki izin CREATE, minta administrator database mengimpor `database/umkm-photos.sql` (MySQL) atau `database/umkm-photos.sqlite.sql` (SQLite) terlebih dahulu. Akun aplikasi tetap hanya memerlukan akses baca/tulis data.
+
+Tanpa `--import-existing`, skrip hanya menyiapkan tabel. Opsi impor adalah langkah pemindahan awal; jangan gunakan untuk pemeliharaan rutin karena usaha yang seluruh fotonya sudah dihapus dapat diisi kembali dari aset contoh. Setelah migrasi tidak ada fallback gambar otomatis. File biner disimpan di `storage/umkm/`, sedangkan catatan, urutan, dan sampul dikelola melalui database. Cadangkan keduanya bersama-sama.
+
+Untuk database lama yang sebelumnya memakai logo berdasarkan nomor tujuan, jalankan `php scripts/migrate-service-logos.php`. Skrip mencadangkan layanan lalu menyimpan pilihan logo pada `services.icon`; tidak mengubah nomor atau nama. Tidak diperlukan perubahan skema. Instalasi baru sudah memakai kunci logo pada seed.

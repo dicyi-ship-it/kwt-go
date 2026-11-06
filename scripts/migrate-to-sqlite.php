@@ -20,7 +20,7 @@ $target->exec(file_get_contents(dirname(__DIR__) . '/database/schema.sqlite.sql'
 $source->beginTransaction();
 $target->beginTransaction();
 try {
-    foreach (['admins', 'services', 'visitors', 'visitor_days', 'login_attempts', 'structure_contacts', 'umkm'] as $table) {
+    foreach (['admins', 'services', 'visitors', 'visitor_days', 'login_attempts', 'structure_contacts', 'umkm', 'umkm_photos'] as $table) {
         $rows = $source->query('SELECT * FROM ' . $table)->fetchAll();
         foreach ($rows as $row) {
             $columns = array_keys($row);

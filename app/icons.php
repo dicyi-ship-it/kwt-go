@@ -1,10 +1,14 @@
 <?php
 declare(strict_types=1);
 
-// Shared emoji catalog for public cards and the clickable admin picker.
 function service_icons(): array
 {
     return [
+        'logo_tangerang' => ['Kota Tangerang', 'assets/kota-tangerang.png'],
+        'logo_polri' => ['Polri', 'assets/polri.png'],
+        'logo_pmi' => ['PMI', 'assets/pmi.svg'],
+        'logo_damkar' => ['Damkar', 'assets/damkar.png'],
+        'logo_puskesmas' => ['Puskesmas', 'assets/puskesmas-panunggangan-barat.jpg'],
         'home' => ['Rumah', '🏠'],
         'alert' => ['Darurat', '🚨'],
         'mosque' => ['Masjid', '🕌'],
@@ -31,6 +35,9 @@ function service_icons(): array
 function service_icon(string $key): string
 {
     $icon = service_icons()[$key] ?? service_icons()['home'];
+    if (str_starts_with($icon[1], 'assets/')) {
+        return '<img src="' . htmlspecialchars(url($icon[1]), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" width="38" height="38" alt="" class="service-logo">';
+    }
     return '<span class="service-emoji" aria-hidden="true">' . htmlspecialchars($icon[1], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</span>';
 }
 

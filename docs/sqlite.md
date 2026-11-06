@@ -1,6 +1,6 @@
 # Instalasi, hosting, dan perawatan SQLite
 
-SQLite menyimpan database dalam file tanpa server MySQL. PHP tetap diperlukan; hosting statis tidak dapat menjalankan aplikasi. Gunakan PHP 8.2+ dengan `pdo_sqlite` dan `mbstring`.
+SQLite menyimpan database dalam file tanpa server MySQL. PHP tetap diperlukan; hosting statis tidak dapat menjalankan aplikasi. Gunakan PHP 8.2+ dengan `pdo_sqlite` dan `mbstring`; unggah foto juga memerlukan `gd` dan `exif`.
 
 ## Menjalankan instalasi lokal
 
@@ -103,7 +103,7 @@ Dengan konfigurasi masih menunjuk MySQL dan folder tujuan sudah ada:
 php scripts/migrate-to-sqlite.php storage/mina.sqlite
 ```
 
-Tujuan harus file baru. Skrip menyalin tujuh tabel dalam transaksi, memeriksa isi setiap baris serta foreign key, dan tidak mengubah MySQL. Hentikan penulisan selama migrasi. Sumber harus memiliki struktur layanan terkini serta tabel kontak/UMKM; gunakan [migrasi MySQL](deployment.md) jika belum.
+Tujuan harus file baru. Skrip menyalin delapan tabel dalam transaksi, memeriksa isi setiap baris serta foreign key, dan tidak mengubah MySQL. Hentikan penulisan selama migrasi. Sumber harus memiliki struktur layanan terkini serta tabel kontak/UMKM/foto; jalankan migrasi foto terlebih dahulu; gunakan [migrasi MySQL](deployment.md) jika belum.
 
 Setelah sukses, backup konfigurasi sumber lalu ubah blok `db`:
 
